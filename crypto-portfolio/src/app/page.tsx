@@ -1,38 +1,53 @@
-"use client";
-import CryptoList from "@/components/Lists/CryptoList";
+"use client"
+import React, { useState, useEffect, Suspense } from "react";
+import { Alert } from "@mui/material";
 import { fetchCryptos } from "@/services/api";
-import { useEffect, useState } from "react";
+import CryptoList from "@/components/Lists/CryptoList";
+import ResponsiveAppBar from "@/components/Header/ResponsiveAppBar";
 
 export default function Home() {
+    const max_size = 20;
     const [cryptos, setCryptos] = useState<Crypto[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+    const [page, setPage] = useState(1); // Track current page
 
     useEffect(() => {
         const getCryptos = async () => {
+            setLoading(true);
+            setError(null);
+            console.log("getCryptos" + page);
             try {
-                const data = await fetchCryptos();
-                console.log(data);
-                setCryptos(data);
-            } catch (error) {
-                console.error("Error fetching cryptos:", error);
+                const data = await fetchCryptos(page, max_size);
+                setCryptos((prevCryptos) => [...prevCryptos, ...data]);
+            } catch (err) {
+                setError("Failed to fetch cryptocurrencies.");
+                console.error("Error fetching cryptos:", err);
+            } finally {
+                setLoading(false);
             }
         };
 
         getCryptos();
-    }, []);
-
-    console.log(cryptos);
+    }, [page]);
 
     return (
-        <main className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
-            <h1 className="text-4xl font-bold">Crypto Portfolio</h1>
-            <p className="text-lg text-gray-400 mt-2">
-                Track and manage your favorite cryptocurrencies.
-            </p>
-
-            <div className="w-full max-w-4xl mt-8 px-4 pt-8">
-                <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
-                    <CryptoList cryptos={cryptos}/>
-                </div>
+        <main className="min-h-screen flex flex-col items-center justify-center text-white"
+              style={{ paddingTop: 'var(--app-bar-height)' }}
+        >
+            <div className="w-full max-w-4xl px-4">
+                {error ? (
+                    <Alert severity="error">{error}</Alert>
+                ) : (
+                    <div className="overflow-x-scroll bg-white rounded-lg shadow-lg">
+                        <CryptoList
+                            cryptos={cryptos}
+                            setPage={setPage}
+                            loading={loading}
+                            setLoading={setLoading}
+                        />
+                    </div>
+                )}
             </div>
         </main>
     );
