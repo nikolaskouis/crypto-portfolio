@@ -32,14 +32,12 @@ export default function Home() {
     }, [page]);
 
     return (
-        <main className="min-h-screen flex flex-col items-center justify-center text-white"
-              style={{ paddingTop: 'var(--app-bar-height)' }}
-        >
+        <main className="flex flex-col items-center justify-center text-white" >
             <div className="w-full max-w-4xl px-4">
                 {error ? (
                     <Alert severity="error">{error}</Alert>
                 ) : (
-                    <div className="overflow-x-scroll bg-white rounded-lg shadow-lg">
+                    <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
                         <CryptoList
                             cryptos={cryptos}
                             setPage={setPage}
