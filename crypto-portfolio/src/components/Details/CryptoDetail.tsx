@@ -14,14 +14,14 @@ import {
     Typography
 } from '@mui/material';
 import {useDispatch} from 'react-redux';
-import {addToPortfolio} from '@/redux/portfolioSlice';
+import {addToPortfolio, addToWatchlist} from '@/redux/portfolioSlice';
 import dynamic from 'next/dynamic';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import {fetchGraph, getCrypto} from "@/services/api";
 import CryptoDetailSkeleton from './CryptoDetailSkeleton';
-import {formatLargeNumber} from "@/utils/formaters";
+import {formatLargeNumber, formatNumberWithCommas} from "@/utils/formaters";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -56,6 +56,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
     const [loading, setLoading] = useState<boolean>(true);
     const [loadingChart, setLoadingChart] = useState<boolean>(true);
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
+    const [snackBarValue, setSnackBarValue] = useState<string>("");
     const [error, setError] = useState<string | null>(null);
     const [selectedTimeframe, setSelectedTimeframe] = useState<TimeframeKey>("1 Month");
     const [processedData, setProcessedData] = useState<ProcessedCryptoData>({
@@ -69,6 +70,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
         priceChangeColor: 'text.secondary',
         marketCap: '0',
         marketCapChange24h: '0.00%',
+        marketCapChange24hColor: 'text.secondary',
         volMktCapRatio: '0.00%',
         fullyDilutedValue: '0',
         totalSupply: '0',
@@ -100,7 +102,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                 const data = await getCrypto(cryptoId);
                 setCryptoData(data);
             } catch (err) {
-                setError('Failed to fetch cryptocurrency details');
+                setError('Failed to fetch cryptocurrency Details');
             } finally {
                 setLoading(false);
             }
@@ -158,6 +160,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                 priceChangeColor: 'text.secondary',
                 marketCap: '0',
                 marketCapChange24h: '0.00%',
+                marketCapChange24hColor: 'text.secondary',
                 volMktCapRatio: '0.00%',
                 fullyDilutedValue: '0',
                 totalSupply: '0',
@@ -195,13 +198,14 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
             name: cryptoData.name || '',
             symbol,
             image: cryptoData.image?.small || "/bitcoin-logo.png",
-            price,
+            price: formatNumberWithCommas(price),
             priceFormatted: `${price.toFixed(2)} USD`,
             priceChangeSign: priceChange24h >= 0 ? '+' : '-',
             priceChange24h: `${Math.abs(priceChange24h).toFixed(2)}%`,
             priceChangeColor: priceChange24h >= 0 ? 'success.main' : 'error.main',
             marketCap: formatLargeNumber(marketCapPrice),
             marketCapChange24h: `${marketCapChange24h.toFixed(2)}%`,
+            marketCapChange24hColor: marketCapChange24h >= 0 ? 'success.main' : 'error.main',
             volMktCapRatio: `${volMktCapRatio.toFixed(2)}%`,
             fullyDilutedValue: formatLargeNumber(fullyDilutedValue),
             totalSupply: formatLargeNumber(totalSupply),
@@ -218,13 +222,26 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
         };
     };
 
-    //Portfolio functionallity not set up yet
-    const handleAddToPortfolio = () => {
+    const handleSnackBar = (value: string) => {
+        setOpenSnackbar(false);
         if (cryptoData) {
-            dispatch(addToPortfolio(cryptoData));
+            const data : PortfolioItem = {
+                id: cryptoData.name,
+                type: 'portfolio',
+                coin: cryptoData,
+                price: processedData.price,
+                quantity: 1 //hardcoded
+            }
+            if(value.toLowerCase().includes('watchlist')) {
+                dispatch(addToWatchlist(data));
+            }
+            else {
+                dispatch(addToPortfolio(data));
+            }
+            setSnackBarValue(value);
             setOpenSnackbar(true);
         }
-    };
+    }
 
     //Made custom skeleton for the loading
     if (loading) {
@@ -241,8 +258,8 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
                 <Typography variant="h5" fontWeight="bold">Coin Details</Typography>
                 <Box display="flex" gap={2}>
-                    <Typography variant="body2" color="white">Portfolio</Typography>
-                    <Typography variant="body2" color="white">Watchlist</Typography>
+                    <Button sx={{color: "white"}} onClick={()=>console.log("Portfolio")}>Portfolio</Button>
+                    <Button sx={{color: "white"}} onClick={()=>handleSnackBar("watchlist")}>Watchlist</Button>
                 </Box>
             </Box>
 
@@ -272,7 +289,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={handleAddToPortfolio}
+                    onClick={()=>handleSnackBar("portfolio")}
                     sx={{ borderRadius: 28, px: 3 }}
                 >
                     Buy {processedData?.symbol}
@@ -288,39 +305,99 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
 
             {/* Key Stats Grid */}
             <Grid container spacing={2} mb={4}>
-                <Grid item xs={6} md={3}>
-                    <Paper elevation={0} sx={{ p: 2, bgcolor: "background.paper", borderRadius: 2 }}>
+                <Grid xs={6} md={3}>
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            p: 2,
+                            bgcolor: "background.paper",
+                            borderRadius: 2,
+                            height: "100%",
+                            display: "flex",
+                            flexDirection: "column"
+                        }}
+                    >
                         <Typography variant="subtitle2" color="text.secondary">Market cap</Typography>
                         <Typography variant="h6" fontWeight="bold">{processedData?.marketCap}</Typography>
-                        <Typography variant="body2" color="success.main">{processedData?.marketCapChange24h}</Typography>
+                        <Typography variant="body2" color={processedData?.marketCapChange24hColor}>{processedData?.marketCapChange24h}</Typography>
                     </Paper>
                 </Grid>
-                <Grid item xs={6} md={3}>
-                    <Paper elevation={0} sx={{ p: 2, bgcolor: "background.paper", borderRadius: 2 }}>
+                <Grid xs={6} md={3}>
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            p: 2,
+                            bgcolor: "background.paper",
+                            borderRadius: 2,
+                            height: "100%",
+                            display: "flex",
+                            flexDirection: "column"
+                        }}
+                    >
                         <Typography variant="subtitle2" color="text.secondary">Vol/Mkt Cap (24h)</Typography>
                         <Typography variant="h6" fontWeight="bold">{processedData?.volMktCapRatio}</Typography>
                     </Paper>
                 </Grid>
-                <Grid item xs={6} md={3}>
-                    <Paper elevation={0} sx={{ p: 2, bgcolor: "background.paper", borderRadius: 2 }}>
+                <Grid xs={6} md={3}>
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            p: 2,
+                            bgcolor: "background.paper",
+                            borderRadius: 2,
+                            height: "100%",
+                            display: "flex",
+                            flexDirection: "column"
+                        }}
+                    >
                         <Typography variant="subtitle2" color="text.secondary">FDV</Typography>
                         <Typography variant="h6" fontWeight="bold">{processedData?.fullyDilutedValue}</Typography>
                     </Paper>
                 </Grid>
-                <Grid item xs={6} md={3}>
-                    <Paper elevation={0} sx={{ p: 2, bgcolor: "background.paper", borderRadius: 2 }}>
+                <Grid xs={6} md={3}>
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            p: 2,
+                            bgcolor: "background.paper",
+                            borderRadius: 2,
+                            height: "100%",
+                            display: "flex",
+                            flexDirection: "column"
+                        }}
+                    >
                         <Typography variant="subtitle2" color="text.secondary">Total supply</Typography>
                         <Typography variant="h6" fontWeight="bold">{processedData?.totalSupply} {processedData?.symbol}</Typography>
                     </Paper>
                 </Grid>
-                <Grid item xs={6} md={3}>
-                    <Paper elevation={0} sx={{ p: 2, bgcolor: "background.paper", borderRadius: 2 }}>
+                <Grid xs={6} md={3}>
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            p: 2,
+                            bgcolor: "background.paper",
+                            borderRadius: 2,
+                            height: "100%",
+                            display: "flex",
+                            flexDirection: "column"
+                        }}
+                    >
                         <Typography variant="body2" color="text.secondary">Max supply</Typography>
                         <Typography variant="h6" fontWeight="bold">{processedData?.maxSupply}</Typography>
                     </Paper>
                 </Grid>
-                <Grid item xs={6} md={3}>
-                    <Paper elevation={0} sx={{ p: 2, bgcolor: "background.paper", borderRadius: 2 }}>
+                <Grid xs={6} md={3}>
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            p: 2,
+                            bgcolor: "background.paper",
+                            borderRadius: 2,
+                            height: "100%",
+                            display: "flex",
+                            flexDirection: "column"
+                        }}
+                    >
                         <Typography variant="subtitle2" color="text.secondary">Circulating supply</Typography>
                         <Typography variant="h6" fontWeight="bold">{processedData?.circulatingSupply} {processedData?.symbol}</Typography>
                         <Typography variant="body2" color="text.secondary">{processedData?.percentageOfMaxSupply} of max supply</Typography>
@@ -377,7 +454,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
 
             <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={() => setOpenSnackbar(false)}>
                 <Alert onClose={() => setOpenSnackbar(false)} severity="success">
-                    Added to Portfolio!
+                    Added to {snackBarValue}!
                 </Alert>
             </Snackbar>
 

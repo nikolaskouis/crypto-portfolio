@@ -12,6 +12,10 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
+import {useSelector} from "react-redux";
+import Logo from "@/components/Logo";
+import ThemeToggleButton from "../Buttons/ThemeToggleButton";
+import {selectPortfolioItems} from "@/redux/portfolioSelectors";
 
 const pages = ['Lists', 'Wallet'];
 const settings = ['Profile', 'Account', 'Settings', 'Logout'];
@@ -20,6 +24,12 @@ const settings = ['Profile', 'Account', 'Settings', 'Logout'];
 function ResponsiveAppBar() {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+
+    const portfolioItems = useSelector(selectPortfolioItems);
+
+    const totalPortfolioValue = portfolioItems.reduce((total: number, item: PortfolioItem) => {
+        return item.price;
+    }, 0);
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -37,26 +47,16 @@ function ResponsiveAppBar() {
     };
 
     return (
-        <AppBar position="static"  sx={{marginBottom: '5rem'}}>
+        <AppBar position="static">
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
-                    <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
                     <Typography
                         variant="h6"
                         noWrap
                         component="a"
                         href="/"
-                        sx={{
-                            mr: 2,
-                            display: { xs: 'none', md: 'flex' },
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            letterSpacing: '.3rem',
-                            color: 'inherit',
-                            textDecoration: 'none',
-                        }}
                     >
-                        LOGO
+                        <Logo/>
                     </Typography>
 
                     <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -93,39 +93,45 @@ function ResponsiveAppBar() {
                             ))}
                         </Menu>
                     </Box>
-                    <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-                    <Typography
-                        variant="h5"
-                        noWrap
-                        component="a"
-                        href="#app-bar-with-responsive-menu"
-                        sx={{
-                            mr: 2,
-                            display: { xs: 'flex', md: 'none' },
-                            flexGrow: 1,
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            letterSpacing: '.3rem',
-                            color: 'inherit',
-                            textDecoration: 'none',
-                        }}
-                    >
-                        LOGO
-                    </Typography>
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         {pages.map((page) => (
                             <Button
                                 key={page}
                                 onClick={handleCloseNavMenu}
-                                sx={{ my: 2, color: 'white', display: 'block' }}
+                                sx={{
+                                    my: 2,
+                                    mx: 1.5,
+                                    color: 'white',
+                                    position: 'relative',
+                                    fontWeight: 500,
+                                    fontSize: '1rem',
+                                    textTransform: 'none',
+                                    '&::after': {
+                                        content: '""',
+                                        position: 'absolute',
+                                        left: 0,
+                                        bottom: -4,
+                                        height: '2px',
+                                        width: '100%',
+                                        backgroundColor: 'white',
+                                        transform: 'scaleX(0)',
+                                        transformOrigin: 'right',
+                                        transition: 'transform 0.3s ease',
+                                    },
+                                    '&:hover::after': {
+                                        transform: 'scaleX(1)',
+                                        transformOrigin: 'left',
+                                    },
+                                }}
                             >
                                 {page}
                             </Button>
                         ))}
                     </Box>
+                    <ThemeToggleButton/>
                     <Box sx={{ flexGrow: 0, paddingRight: '2rem' }}>
                         <Tooltip title="Portfolio Amount">
-                            <Typography>$ 10,000.03</Typography>
+                            <Typography>$ {totalPortfolioValue}</Typography>
                         </Tooltip>
                     </Box>
                     <Box sx={{ flexGrow: 0 }}>

@@ -5,6 +5,8 @@ import { Provider } from 'react-redux';
 import { store } from '@/redux/store';
 import ResponsiveAppBar from "@/components/Header/ResponsiveAppBar";
 import React from "react";
+import { ThemeToggleProvider } from "@/context/ThemeContext";
+import Footer from "../components/Footer/Footer";
 
 export default function RootLayout({
                                        children,
@@ -13,15 +15,24 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-        <body className="bg-gray-900 text-white">
-        <div className="fixed top-0 left-0 right-0 z-50">
-            <ResponsiveAppBar />
-        </div>
-        <div style={{ paddingTop: 'var(--app-bar-height)' }}>
+        <body>
+        <ThemeToggleProvider>
             <Provider store={store}>
-                {children}
+                <div className="flex flex-col min-h-screen">
+                    <header className="z-50">
+                        <ResponsiveAppBar />
+                    </header>
+
+                    <main className="flex-1 overflow-y-auto">
+                        {children}
+                    </main>
+
+                    <footer className="z-50">
+                        <Footer />
+                    </footer>
+                </div>
             </Provider>
-        </div>
+        </ThemeToggleProvider>
         </body>
         </html>
     );

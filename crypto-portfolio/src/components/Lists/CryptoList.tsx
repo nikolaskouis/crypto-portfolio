@@ -1,5 +1,4 @@
-"use client"
-import React, {useEffect, useRef, useState, useCallback} from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import {
     Container,
     Table,
@@ -7,28 +6,20 @@ import {
     TableCell,
     TableHead,
     TableRow,
-    TextField,
     TableSortLabel,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    Grid,
-    Slider,
     Typography,
-    Box,
-    Chip,
     Paper,
-    CircularProgress, Button
+    CircularProgress,
+    Button
 } from "@mui/material";
-import Link from "next/link";
-import FilterListIcon from '@mui/icons-material/FilterList';
-import AddIcon from '@mui/icons-material/Add';
+import StarIcon from '@mui/icons-material/Star';
 import {formatLargeNumber, formatPriceChangePercent} from "@/utils/formaters";
+import {useTheme} from "@mui/system";
+import FilterSearchBar from "@/components/Search/FilterSearchBar";
 
-const CryptoList = ({ cryptos, setPage, loading, setLoading }: { cryptos: Crypto[], setPage: React.Dispatch<React.SetStateAction<number>>, loading: boolean, setLoading: React.Dispatch<React.SetStateAction<boolean>> }) => {
+const CryptoList = ({ cryptos, setPage, loading, setLoading, onRowClick }: { cryptos: Crypto[], setPage: React.Dispatch<React.SetStateAction<number>>, loading: boolean, setLoading: React.Dispatch<React.SetStateAction<boolean>>, onRowClick: (id:string) => void }) => {
+    const theme = useTheme(); // custom theme
     const [search, setSearch] = useState("");
-    const [showFilter, setShowFilter] = useState(false);
     const [sortConfig, setSortConfig] = useState<{ key: keyof Crypto; direction: "asc" | "desc" } | null>(null);
     const [marketCapFilter, setMarketCapFilter] = useState<string>("all");
     const [priceRange, setPriceRange] = useState<[number, number]>([0, 100000]);
@@ -41,8 +32,6 @@ const CryptoList = ({ cryptos, setPage, loading, setLoading }: { cryptos: Crypto
         medium: 10000000000, // $10 Billion
         large: 50000000000, // $50 Billion
     };
-    const maxPrice = Math.max(...cryptos.map(crypto => crypto.current_price));
-
 
     // Function to detect when the list is scrolled to the bottom
     const handleScroll = useCallback(() => {
@@ -85,10 +74,6 @@ const CryptoList = ({ cryptos, setPage, loading, setLoading }: { cryptos: Crypto
             key,
             direction: prev?.key === key && prev.direction === "asc" ? "desc" : "asc",
         }));
-    };
-
-    const handlePriceRangeChange = (event: Event, newValue: number | number[]) => {
-        setPriceRange(newValue as [number, number]);
     };
 
     // Main Filtering
@@ -134,15 +119,6 @@ const CryptoList = ({ cryptos, setPage, loading, setLoading }: { cryptos: Crypto
         return 0;
     });
 
-    // Clear all filters
-    const clearFilters = () => {
-        setSearch("");
-        setMarketCapFilter("all");
-        setPriceRange([0, maxPrice]);
-        setPerformanceFilter("all");
-        setSortConfig(null);
-    };
-
     // Get visible items with a placeholder for estimated total height
     const getVisibleItems = () => {
         const [start, end] = visibleRange;
@@ -155,146 +131,46 @@ const CryptoList = ({ cryptos, setPage, loading, setLoading }: { cryptos: Crypto
         return { visibleItems, totalHeight, startOffset };
     };
 
+    const handleWatchList = (cryptoData: Crypto) => {
+        console.log("watch list: " + cryptoData.name);
+        //TODO: Add this to wallet dispatch
+    }
+
     const { visibleItems, totalHeight, startOffset } = getVisibleItems();
 
     return (
-        <Container maxWidth="lg">
-            <Paper sx={{ p: 2, mb: 4, mt: 2 }} elevation={2}>
-                <Typography variant="h4" gutterBottom>Cryptocurrency List</Typography>
+        <Container maxWidth="lg" sx={{paddingBottom: "1rem", paddingTop: "1rem"}}>
+            <Paper
+                sx={{
+                    p: 2,
+                    mb: 4,
+                    mt: 2,
+                    borderRadius: 3,
+                    backgroundColor: theme.palette.background.paper,
+                }}
+                elevation={4}
+            >
+                <FilterSearchBar
+                    cryptos={sortedCryptos}
+                    setSortConfig={setSortConfig}
+                    sortConfig={sortConfig}
+                    setPerformanceFilter={setPerformanceFilter}
+                    search={search}
+                    setSearch={setSearch}
+                    performanceFilter={performanceFilter}
+                    priceRange={priceRange}
+                    setPriceRange={setPriceRange}
+                    setMarketCapFilter={setMarketCapFilter}
+                    marketCapFilter={marketCapFilter}
+                />
 
-                {/* Search */}
-                <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
-                    {/* Search Field */}
-                    <Grid item sx={{ width: '90%' }}>
-                        <TextField
-                            fullWidth
-                            label="Search Cryptocurrency"
-                            variant="outlined"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                    </Grid>
-
-                    {/* Filter Button */}
-                    <Grid item sx={{ width: '5%' }}>
-                        <Button
-                            variant={!showFilter ? "outlined" : "contained"}
-                            color="primary"
-                            onClick={() => { setShowFilter(!showFilter); }}
-                            fullWidth
-                        ><FilterListIcon /></Button>
-                    </Grid>
-                </Grid>
-
-                {showFilter &&
-                    <>
-                        <Grid container spacing={3} sx={{ mb: 3 }}>
-                            {/* Market Cap Filter */}
-                            <Grid item xs={12} sm={4}>
-                                <FormControl fullWidth>
-                                    <InputLabel>Market Cap</InputLabel>
-                                    <Select
-                                        value={marketCapFilter}
-                                        label="Market Cap"
-                                        onChange={(e) => setMarketCapFilter(e.target.value)}
-                                    >
-                                        <MenuItem value="all">All Market Caps</MenuItem>
-                                        <MenuItem value="small">Small Cap (&lt; $10B)</MenuItem>
-                                        <MenuItem value="medium">Mid Cap ($10B - $50B)</MenuItem>
-                                        <MenuItem value="large">Large Cap (&gt; $50B)</MenuItem>
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-
-                            {/* 24h Performance Filter */}
-                            <Grid item xs={12} sm={4}>
-                                <FormControl fullWidth>
-                                    <InputLabel>24h Performance</InputLabel>
-                                    <Select
-                                        value={performanceFilter}
-                                        label="24h Performance"
-                                        onChange={(e) => setPerformanceFilter(e.target.value)}
-                                    >
-                                        <MenuItem value="all">All Performance</MenuItem>
-                                        <MenuItem value="positive">Positive (+)</MenuItem>
-                                        <MenuItem value="negative">Negative (-)</MenuItem>
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                            <Grid item xs={12} sm={8} sx={{ display: 'flex', alignItems: 'center' }}>
-                                <Box>
-                                    <Typography gutterBottom>Price Range</Typography>
-                                    <Slider
-                                        value={priceRange}
-                                        onChange={handlePriceRangeChange}
-                                        valueLabelDisplay="auto"
-                                        min={0}
-                                        max={maxPrice}
-                                        valueLabelFormat={(value) => `$${value.toLocaleString()}`}
-                                    />
-                                    <Grid container>
-                                        <Grid item>
-                                            <Typography variant="body2" color="text.secondary">
-                                                ${priceRange[0].toLocaleString()} - ${priceRange[1].toLocaleString()}
-                                            </Typography>
-                                        </Grid>
-                                    </Grid>
-                                </Box>
-                            </Grid>
-
-                            {/* Clear Filters Button */}
-                            <Grid item xs={12} sm={4} sx={{ display: 'flex', alignItems: 'center' }}>
-                                <Chip
-                                    label="Clear All Filters"
-                                    onClick={clearFilters}
-                                    variant="outlined"
-                                    color="primary"
-                                    sx={{ ml: 'auto' }}
-                                />
-                            </Grid>
-                        </Grid>
-
-                        {/* Active Filters Display */}
-                        {(search || marketCapFilter !== "all" || performanceFilter !== "all" || priceRange[0] > 0 || priceRange[1] < maxPrice) && (
-                            <Box sx={{ mb: 2 }}>
-                                <Typography variant="body2" color="text.secondary" gutterBottom>
-                                    Active Filters:
-                                </Typography>
-                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                    {search && <Chip size="small" label={`Search: ${search}`} onDelete={() => setSearch("")} />}
-                                    {marketCapFilter !== "all" && (
-                                        <Chip
-                                            size="small"
-                                            label={`Market Cap: ${marketCapFilter}`}
-                                            onDelete={() => setMarketCapFilter("all")}
-                                        />
-                                    )}
-                                    {performanceFilter !== "all" && (
-                                        <Chip
-                                            size="small"
-                                            label={`Performance: ${performanceFilter}`}
-                                            onDelete={() => setPerformanceFilter("all")}
-                                        />
-                                    )}
-                                    {(priceRange[0] > 0 || priceRange[1] < maxPrice) && (
-                                        <Chip
-                                            size="small"
-                                            label={`Price: $${priceRange[0]} - $${priceRange[1]}`}
-                                            onDelete={() => setPriceRange([0, maxPrice])}
-                                        />
-                                    )}
-                                </Box>
-                            </Box>
-                        )}
-                    </>
-                }
+                {/* Showing Count */}
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                     Showing {sortedCryptos.length} out of {cryptos.length} cryptocurrencies
                 </Typography>
             </Paper>
-
             {/* Cryptocurrency Table */}
-            <Paper sx={{ mb: 4, overflowY: "auto", maxHeight: "400px" }} elevation={2} ref={listRef}>
+            <Paper sx={{ mb: 4, borderRadius: 3, overflowY: "auto", maxHeight: "400px" }} elevation={4} ref={listRef}>
                 <Table sx={{ minWidth: 650 }} size="small" aria-label="cryptocurrency table">
                     <TableHead>
                         <TableRow>
@@ -354,13 +230,24 @@ const CryptoList = ({ cryptos, setPage, loading, setLoading }: { cryptos: Crypto
                                 )}
 
                                 {/* Only render visible items */}
-                                {visibleItems.map((crypto) => (
-                                    <TableRow key={crypto.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                {visibleItems.map((crypto: Crypto) => (
+                                    <TableRow
+                                        key={crypto.id}
+                                        sx={{
+                                            '&:last-child td, &:last-child th': { border: 0 },
+                                            '&:hover': {
+                                                backgroundColor: theme.palette.action.hover,
+                                                cursor: 'pointer',
+                                            }
+                                        }}
+                                        onClick={() => onRowClick(crypto.id)}
+                                    >
                                         <TableCell>
+                                            <StarIcon style={{ marginRight: '8px', cursor: 'pointer' }} onClick={(e) => {
+                                                e.stopPropagation(); // Prevent navigation on star click
+                                                handleWatchList(crypto);
+                                            }} />
                                             {crypto.name}
-                                            <Link href={`/crypto/${crypto.id}`}>
-                                                <AddIcon style={{ marginLeft: '8px', cursor: 'pointer' }} />
-                                            </Link>
                                         </TableCell>
                                         <TableCell>{crypto.symbol.toUpperCase()}</TableCell>
                                         <TableCell>${crypto.current_price.toLocaleString()}</TableCell>
@@ -368,15 +255,10 @@ const CryptoList = ({ cryptos, setPage, loading, setLoading }: { cryptos: Crypto
                                         <TableCell>{formatPriceChangePercent(crypto.price_change_percentage_24h)}</TableCell>
                                     </TableRow>
                                 ))}
-
-                                {/* Spacer for remaining height */}
-                                {startOffset + visibleItems.length * 53 < totalHeight && (
-                                    <tr style={{ height: `${totalHeight - (startOffset + visibleItems.length * 53)}px` }} />
-                                )}
                             </>
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={7} align="center">
+                                <TableCell colSpan={5} align="center">
                                     <Typography variant="body1" sx={{ py: 2 }}>
                                         No cryptocurrencies match your filters
                                     </Typography>
