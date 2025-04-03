@@ -9,6 +9,7 @@ interface ProcessedCryptoData {
     priceChangeColor: string;
     marketCap: string;
     marketCapChange24h: string;
+    marketCapChange24hColor: string;
     volMktCapRatio: string;
     fullyDilutedValue: string;
     totalSupply: string;

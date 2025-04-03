@@ -1,5 +1,5 @@
 // app/crypto/[id]/page.tsx
-import CryptoDetail from '@/components/details/CryptoDetail';
+import CryptoDetail from '@/components/Details/CryptoDetail';
 
 interface Props {
     params: {

@@ -17,3 +17,7 @@ export  const formatLargeNumber = (value: number): string => {
     }
     return value.toString();
 };
+
+export const formatNumberWithCommas = (value: number): string => {
+    return value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}

@@ -32,8 +32,8 @@ export default function Home() {
     }, [page]);
 
     return (
-        <main className="flex flex-col items-center justify-center text-white" >
-            <div className="w-full max-w-4xl px-4">
+        <main className="flex flex-col items-center justify-center" >
+                <div className="w-full max-w-4xl px-4">
                 {error ? (
                     <Alert severity="error">{error}</Alert>
                 ) : (
