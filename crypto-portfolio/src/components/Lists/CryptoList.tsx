@@ -24,6 +24,7 @@ import {
 import Link from "next/link";
 import FilterListIcon from '@mui/icons-material/FilterList';
 import AddIcon from '@mui/icons-material/Add';
+import {formatLargeNumber, formatPriceChangePercent} from "@/utils/formaters";
 
 const CryptoList = ({ cryptos, setPage, loading, setLoading }: { cryptos: Crypto[], setPage: React.Dispatch<React.SetStateAction<number>>, loading: boolean, setLoading: React.Dispatch<React.SetStateAction<boolean>> }) => {
     const [search, setSearch] = useState("");
@@ -132,26 +133,6 @@ const CryptoList = ({ cryptos, setPage, loading, setLoading }: { cryptos: Crypto
         }
         return 0;
     });
-
-    //TODO: Add Formats to utils
-
-    // Format price + change color, red/green
-    const formatPriceChange = (change: number) => {
-        const color = change >= 0 ? "success.main" : "error.main";
-        const sign = change >= 0 ? "+" : "";
-        return <Typography sx={{ color }}>{sign}{change?.toFixed(2)}%</Typography>;
-    };
-
-    // Format large numbers
-    const formatNumber = (num: number) => {
-        if (num >= 1000000000) {
-            return `$${(num / 1000000000).toFixed(2)}B`;
-        } else if (num >= 1000000) {
-            return `$${(num / 1000000).toFixed(2)}M`;
-        } else {
-            return `$${num?.toLocaleString()}`;
-        }
-    };
 
     // Clear all filters
     const clearFilters = () => {
@@ -383,8 +364,8 @@ const CryptoList = ({ cryptos, setPage, loading, setLoading }: { cryptos: Crypto
                                         </TableCell>
                                         <TableCell>{crypto.symbol.toUpperCase()}</TableCell>
                                         <TableCell>${crypto.current_price.toLocaleString()}</TableCell>
-                                        <TableCell>{formatNumber(crypto.market_cap)}</TableCell>
-                                        <TableCell>{formatPriceChange(crypto.price_change_percentage_24h)}</TableCell>
+                                        <TableCell>{formatLargeNumber(crypto.market_cap)}</TableCell>
+                                        <TableCell>{formatPriceChangePercent(crypto.price_change_percentage_24h)}</TableCell>
                                     </TableRow>
                                 ))}
 
