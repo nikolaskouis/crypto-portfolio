@@ -38,7 +38,7 @@ const CryptoDetailSkeleton = () => {
             {/* Key Stats Grid */}
             <Grid container spacing={2} mb={4}>
                 {[...Array(6)].map((_, index) => (
-                    <Grid item xs={6} md={3} key={index}>
+                    <Grid xs={6} md={3} key={index}>
                         <Paper elevation={0} sx={{ p: 2, bgcolor: "background.paper", borderRadius: 2 }}>
                             <Skeleton width={120} height={20} />
                             <Skeleton width={100} height={32} sx={{ mt: 1 }} />

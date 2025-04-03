@@ -14,6 +14,8 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import {useSelector} from "react-redux";
 import Logo from "@/components/Logo";
+import ThemeToggleButton from "../Buttons/ThemeToggleButton";
+import {selectPortfolioItems} from "@/redux/portfolioSelectors";
 
 const pages = ['Lists', 'Wallet'];
 const settings = ['Profile', 'Account', 'Settings', 'Logout'];
@@ -23,9 +25,7 @@ function ResponsiveAppBar() {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
-    const portfolioItems = useSelector((state: any) =>
-        state.portfolio.items.filter((item: any) => item.type === 'portfolio')
-    ) as PortfolioItem[];
+    const portfolioItems = useSelector(selectPortfolioItems);
 
     const totalPortfolioValue = portfolioItems.reduce((total: number, item: PortfolioItem) => {
         return item.price;
@@ -47,7 +47,7 @@ function ResponsiveAppBar() {
     };
 
     return (
-        <AppBar position="static"  sx={{marginBottom: '5rem'}}>
+        <AppBar position="static">
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     <Typography
@@ -93,36 +93,42 @@ function ResponsiveAppBar() {
                             ))}
                         </Menu>
                     </Box>
-                    <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-                    <Typography
-                        variant="h5"
-                        noWrap
-                        component="a"
-                        href="#app-bar-with-responsive-menu"
-                        sx={{
-                            mr: 2,
-                            display: { xs: 'flex', md: 'none' },
-                            flexGrow: 1,
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            letterSpacing: '.3rem',
-                            color: 'inherit',
-                            textDecoration: 'none',
-                        }}
-                    >
-                        LOGO
-                    </Typography>
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         {pages.map((page) => (
                             <Button
                                 key={page}
                                 onClick={handleCloseNavMenu}
-                                sx={{ my: 2, color: 'white', display: 'block' }}
+                                sx={{
+                                    my: 2,
+                                    mx: 1.5,
+                                    color: 'white',
+                                    position: 'relative',
+                                    fontWeight: 500,
+                                    fontSize: '1rem',
+                                    textTransform: 'none',
+                                    '&::after': {
+                                        content: '""',
+                                        position: 'absolute',
+                                        left: 0,
+                                        bottom: -4,
+                                        height: '2px',
+                                        width: '100%',
+                                        backgroundColor: 'white',
+                                        transform: 'scaleX(0)',
+                                        transformOrigin: 'right',
+                                        transition: 'transform 0.3s ease',
+                                    },
+                                    '&:hover::after': {
+                                        transform: 'scaleX(1)',
+                                        transformOrigin: 'left',
+                                    },
+                                }}
                             >
                                 {page}
                             </Button>
                         ))}
                     </Box>
+                    <ThemeToggleButton/>
                     <Box sx={{ flexGrow: 0, paddingRight: '2rem' }}>
                         <Tooltip title="Portfolio Amount">
                             <Typography>$ {totalPortfolioValue}</Typography>

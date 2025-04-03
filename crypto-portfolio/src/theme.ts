@@ -11,7 +11,7 @@ const darkTheme = createTheme({
         },
         background: {
             default: "#0D1117",
-            paper: "#161B22",
+            paper: "#0a0c10",
         },
         text: {
             primary: "#FFFFFF",
@@ -26,6 +26,19 @@ const darkTheme = createTheme({
         body1: { fontSize: "1rem" },
         body2: { fontSize: "0.875rem" },
     },
+    components: {
+        MuiCard: {
+            styleOverrides: {
+                root: {
+                    borderRadius: 16,
+                    backgroundColor: "#06060c",
+                    color: "#FFFFFF",
+                    boxShadow: "0px 2px 8px rgba(0,0,0,0.5)",
+                },
+            },
+        },
+    }
+
 });
 
 const lightTheme = createTheme({
@@ -53,6 +66,18 @@ const lightTheme = createTheme({
         body1: { fontSize: "1rem" },
         body2: { fontSize: "0.875rem" },
     },
+    components: {
+        MuiCard: {
+            styleOverrides: {
+                root: {
+                    borderRadius: 16,
+                    backgroundColor: "#f5f5f6",
+                    color: "#221f1f",
+                    boxShadow: "0px 2px 8px rgba(0,0,0,0.5)",
+                },
+            },
+        },
+    }
 });
 
 export { darkTheme, lightTheme };

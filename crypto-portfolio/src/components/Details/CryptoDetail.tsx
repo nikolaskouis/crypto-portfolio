@@ -305,7 +305,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
 
             {/* Key Stats Grid */}
             <Grid container spacing={2} mb={4}>
-                <Grid item xs={6} md={3}>
+                <Grid xs={6} md={3}>
                     <Paper
                         elevation={0}
                         sx={{
@@ -322,7 +322,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                         <Typography variant="body2" color={processedData?.marketCapChange24hColor}>{processedData?.marketCapChange24h}</Typography>
                     </Paper>
                 </Grid>
-                <Grid item xs={6} md={3}>
+                <Grid xs={6} md={3}>
                     <Paper
                         elevation={0}
                         sx={{
@@ -338,7 +338,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                         <Typography variant="h6" fontWeight="bold">{processedData?.volMktCapRatio}</Typography>
                     </Paper>
                 </Grid>
-                <Grid item xs={6} md={3}>
+                <Grid xs={6} md={3}>
                     <Paper
                         elevation={0}
                         sx={{
@@ -354,7 +354,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                         <Typography variant="h6" fontWeight="bold">{processedData?.fullyDilutedValue}</Typography>
                     </Paper>
                 </Grid>
-                <Grid item xs={6} md={3}>
+                <Grid xs={6} md={3}>
                     <Paper
                         elevation={0}
                         sx={{
@@ -370,7 +370,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                         <Typography variant="h6" fontWeight="bold">{processedData?.totalSupply} {processedData?.symbol}</Typography>
                     </Paper>
                 </Grid>
-                <Grid item xs={6} md={3}>
+                <Grid xs={6} md={3}>
                     <Paper
                         elevation={0}
                         sx={{
@@ -386,7 +386,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                         <Typography variant="h6" fontWeight="bold">{processedData?.maxSupply}</Typography>
                     </Paper>
                 </Grid>
-                <Grid item xs={6} md={3}>
+                <Grid xs={6} md={3}>
                     <Paper
                         elevation={0}
                         sx={{
