@@ -18,7 +18,6 @@ export default function Home() {
         const getCryptos = async () => {
             setLoading(true);
             setError(null);
-            console.log("getCryptos" + page);
             try {
                 const data = await fetchCryptos(page, max_size);
                 setCryptos((prevCryptos) => [...prevCryptos, ...data]);

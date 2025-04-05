@@ -22,6 +22,9 @@ import timezone from 'dayjs/plugin/timezone';
 import {fetchGraph, getCrypto} from "@/services/api";
 import CryptoDetailSkeleton from './CryptoDetailSkeleton';
 import {formatLargeNumber, formatNumberWithCommas} from "@/utils/formaters";
+import { motion } from "framer-motion";
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -52,7 +55,8 @@ type TimeframeKey = "1 Day" | "7 Days" | "2 Weeks" | "1 Month" | "3 Months" | "6
 const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
     const [cryptoData, setCryptoData] = useState<CryptoCurrency>();
     const [marketChartData, setMarketChartData] = useState<MarketChartData[]>([]);
-
+    const [showCoinAnimation, setShowCoinAnimation] = useState(false);
+    const [watchList, setWatchList] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true);
     const [loadingChart, setLoadingChart] = useState<boolean>(true);
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
@@ -63,7 +67,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
         name: '',
         symbol: '',
         image: '/placeholder.png',
-        price: 0,
+        price: "0",
         priceFormatted: '0.00 USD',
         priceChangeSign: '+',
         priceChange24h: '0.00%',
@@ -153,7 +157,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                 name: '',
                 symbol: '',
                 image: '/placeholder.png',
-                price: 0,
+                price: "0",
                 priceFormatted: '0.00 USD',
                 priceChangeSign: '+',
                 priceChange24h: '0.00%',
@@ -222,20 +226,36 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
         };
     };
 
+    const triggerCoinAnimation = () => {
+        setShowCoinAnimation(true);
+        setTimeout(() => setShowCoinAnimation(false), 1000); // duration
+    };
+
+    const toggleWatchList = () => {
+        setWatchList(!watchList);
+    }
+
     const handleSnackBar = (value: string) => {
         setOpenSnackbar(false);
         if (cryptoData) {
-            const data : PortfolioItem = {
-                id: cryptoData.name,
-                type: 'portfolio',
-                coin: cryptoData,
-                price: processedData.price,
-                quantity: 1 //hardcoded
-            }
+
             if(value.toLowerCase().includes('watchlist')) {
+                const data : WatchlistItem = {
+                    id: cryptoData.name,
+                    type: 'watchlist',
+                    coin: cryptoData,
+                    selected : !watchList
+                }
                 dispatch(addToWatchlist(data));
             }
             else {
+                const data : PortfolioItem = {
+                    id: cryptoData.name,
+                    type: 'portfolio',
+                    coin: cryptoData,
+                    price: processedData.price,
+                    quantity: 1 //hardcoded
+                }
                 dispatch(addToPortfolio(data));
             }
             setSnackBarValue(value);
@@ -244,9 +264,9 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
     }
 
     //Made custom skeleton for the loading
-    if (loading) {
+    if (loading || error) {
         return (
-            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+            <Box sx={{ maxWidth: 1200, mx: "auto", px: 2, py: 3 }}>
                 <CryptoDetailSkeleton/>
             </Box>
         );
@@ -257,9 +277,11 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
             {/* Header with Logo and Navigation */}
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
                 <Typography variant="h5" fontWeight="bold">Coin Details</Typography>
-                <Box display="flex" gap={2}>
-                    <Button sx={{color: "white"}} onClick={()=>console.log("Portfolio")}>Portfolio</Button>
-                    <Button sx={{color: "white"}} onClick={()=>handleSnackBar("watchlist")}>Watchlist</Button>
+                <Box display="flex">
+                    <Button sx={{color: "text.primary"}} onClick={()=> {
+                        handleSnackBar("watchlist");
+                        toggleWatchList();
+                    }}> {watchList ? <StarIcon/> : <StarBorderIcon/>}</Button>
                 </Box>
             </Box>
 
@@ -281,36 +303,82 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                             <Typography variant="body1" color={processedData.priceChangeColor} fontWeight="bold">
                                 {processedData.priceChangeSign} {processedData.priceChange24h}
                             </Typography>
-                            <Typography variant="body2" color="white">({selectedTimeframe})</Typography>
+                            <Typography variant="body2" color="text.primary">({selectedTimeframe})</Typography>
                         </Stack>
                     </Box>
-
                 </Box>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={()=>handleSnackBar("portfolio")}
-                    sx={{ borderRadius: 28, px: 3 }}
-                >
-                    Buy {processedData?.symbol}
-                </Button>
             </Box>
 
             {/* Price Header */}
             <Box mb={3}>
-                <Typography variant="h3" component="p" fontWeight="bold">
-                    {processedData.price} USD
-                </Typography>
+                <Grid container spacing={2} alignItems="center" justifyContent="space-between">
+                    <Grid>
+                        <Typography variant="h3" component="p" fontWeight="bold">
+                            {processedData.price} USD
+                        </Typography>
+                    </Grid>
+                    <Grid>
+                        {/*Coin Animation when clicking*/}
+                        <motion.div
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => {
+                                handleSnackBar("portfolio");
+                                triggerCoinAnimation();
+                            }}
+                            style={{ position: 'relative' }}
+                        >
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                sx={{ borderRadius: 28 }}
+                                fullWidth
+                            >
+                                Buy {processedData?.symbol}
+                            </Button>
+
+                            {showCoinAnimation && (
+                                <>
+                                    {[...Array(5)].map((_, i) => (
+                                        <motion.div
+                                            key={i}
+                                            initial={{ y: 0, opacity: 1, scale: 1 }}
+                                            animate={{
+                                                y: -100 - Math.random() * 50,
+                                                opacity: 0,
+                                                scale: 1.5,
+                                                x: (Math.random() - 0.5) * 100
+                                            }}
+                                            transition={{ duration: 1, ease: "easeOut" }}
+                                            style={{
+                                                position: 'absolute',
+                                                top: 0,
+                                                left: '50%',
+                                                transform: 'translateX(-50%)',
+                                                fontSize: '1.5rem',
+                                                pointerEvents: 'none',
+                                                zIndex: 10
+                                            }}
+                                        >
+                                            🪙
+                                        </motion.div>
+                                    ))}
+                                </>
+                            )}
+                        </motion.div>
+                    </Grid>
+                </Grid>
             </Box>
+
+
 
             {/* Key Stats Grid */}
             <Grid container spacing={2} mb={4}>
-                <Grid xs={6} md={3}>
+                <Grid>
                     <Paper
                         elevation={0}
                         sx={{
                             p: 2,
-                            bgcolor: "background.paper",
+                            backgroundColor: "background.paper",
                             borderRadius: 2,
                             height: "100%",
                             display: "flex",
@@ -322,12 +390,12 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                         <Typography variant="body2" color={processedData?.marketCapChange24hColor}>{processedData?.marketCapChange24h}</Typography>
                     </Paper>
                 </Grid>
-                <Grid xs={6} md={3}>
+                <Grid>
                     <Paper
                         elevation={0}
                         sx={{
                             p: 2,
-                            bgcolor: "background.paper",
+                            backgroundColor: "background.paper",
                             borderRadius: 2,
                             height: "100%",
                             display: "flex",
@@ -338,12 +406,12 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                         <Typography variant="h6" fontWeight="bold">{processedData?.volMktCapRatio}</Typography>
                     </Paper>
                 </Grid>
-                <Grid xs={6} md={3}>
+                <Grid>
                     <Paper
                         elevation={0}
                         sx={{
                             p: 2,
-                            bgcolor: "background.paper",
+                            backgroundColor: "background.paper",
                             borderRadius: 2,
                             height: "100%",
                             display: "flex",
@@ -354,12 +422,12 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                         <Typography variant="h6" fontWeight="bold">{processedData?.fullyDilutedValue}</Typography>
                     </Paper>
                 </Grid>
-                <Grid xs={6} md={3}>
+                <Grid>
                     <Paper
                         elevation={0}
                         sx={{
                             p: 2,
-                            bgcolor: "background.paper",
+                            backgroundColor: "background.paper",
                             borderRadius: 2,
                             height: "100%",
                             display: "flex",
@@ -370,12 +438,12 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                         <Typography variant="h6" fontWeight="bold">{processedData?.totalSupply} {processedData?.symbol}</Typography>
                     </Paper>
                 </Grid>
-                <Grid xs={6} md={3}>
+                <Grid>
                     <Paper
                         elevation={0}
                         sx={{
                             p: 2,
-                            bgcolor: "background.paper",
+                            backgroundColor: "background.paper",
                             borderRadius: 2,
                             height: "100%",
                             display: "flex",
@@ -386,12 +454,12 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                         <Typography variant="h6" fontWeight="bold">{processedData?.maxSupply}</Typography>
                     </Paper>
                 </Grid>
-                <Grid xs={6} md={3}>
+                <Grid>
                     <Paper
                         elevation={0}
                         sx={{
                             p: 2,
-                            bgcolor: "background.paper",
+                            backgroundColor: "background.paper",
                             borderRadius: 2,
                             height: "100%",
                             display: "flex",
@@ -417,7 +485,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                             variant={selectedTimeframe === time ? "filled" : "outlined"}
                             sx={{
                                 borderRadius: 1,
-                                bgcolor: selectedTimeframe === time ? 'primary.main' : 'transparent',
+                                backgroundColor: selectedTimeframe === time ? 'primary.main' : 'transparent',
                                 color: selectedTimeframe === time ? 'white' : 'inherit'
                             }}
                         />
@@ -425,7 +493,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                 </Stack>
 
                 {/* Chart Display */}
-                <Paper elevation={0} sx={{ p: 2, bgcolor: "background.paper", borderRadius: 2, mb: 3 }}>
+                <Paper elevation={0} sx={{ p: 2, backgroundColor: "background.paper", borderRadius: 2, mb: 3 }}>
                     <Box height={300}>
                         {loadingChart ? (
                             <Box display="flex" justifyContent="center" alignItems="center" height="100%">

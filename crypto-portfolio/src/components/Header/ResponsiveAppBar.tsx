@@ -1,27 +1,33 @@
+"use effect";
 import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
+import {
+    AppBar,
+    Box,
+    Toolbar,
+    IconButton,
+    Typography,
+    Menu,
+    Container,
+    Avatar,
+    Button,
+    Tooltip,
+    MenuItem
+} from '@mui/material';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
 import {useSelector} from "react-redux";
 import Logo from "@/components/Logo";
 import ThemeToggleButton from "../Buttons/ThemeToggleButton";
 import {selectPortfolioItems} from "@/redux/portfolioSelectors";
+import {useRouter} from "next/navigation";
+import {circleLineEffect, linkUnderlineEffect} from "@/utils/animations";
 
 const pages = ['Lists', 'Wallet'];
 const settings = ['Profile', 'Account', 'Settings', 'Logout'];
 
 //MUI Responsive Bar
 function ResponsiveAppBar() {
+    const router = useRouter();
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -30,6 +36,11 @@ function ResponsiveAppBar() {
     const totalPortfolioValue = portfolioItems.reduce((total: number, item: PortfolioItem) => {
         return item.price;
     }, 0);
+
+    const handleNavClick = (page: string) => {
+        if (page === "Lists") router.push("/");
+        else if (page === "Wallet") router.push("/wallet");
+    };
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -83,7 +94,10 @@ function ResponsiveAppBar() {
                                 horizontal: 'left',
                             }}
                             open={Boolean(anchorElNav)}
-                            onClose={handleCloseNavMenu}
+                            onClick={() => {
+                                handleCloseNavMenu();
+                            }}
+
                             sx={{ display: { xs: 'block', md: 'none' } }}
                         >
                             {pages.map((page) => (
@@ -97,32 +111,12 @@ function ResponsiveAppBar() {
                         {pages.map((page) => (
                             <Button
                                 key={page}
-                                onClick={handleCloseNavMenu}
-                                sx={{
-                                    my: 2,
-                                    mx: 1.5,
-                                    color: 'white',
-                                    position: 'relative',
-                                    fontWeight: 500,
-                                    fontSize: '1rem',
-                                    textTransform: 'none',
-                                    '&::after': {
-                                        content: '""',
-                                        position: 'absolute',
-                                        left: 0,
-                                        bottom: -4,
-                                        height: '2px',
-                                        width: '100%',
-                                        backgroundColor: 'white',
-                                        transform: 'scaleX(0)',
-                                        transformOrigin: 'right',
-                                        transition: 'transform 0.3s ease',
-                                    },
-                                    '&:hover::after': {
-                                        transform: 'scaleX(1)',
-                                        transformOrigin: 'left',
-                                    },
+                                onClick={() => {
+                                    handleNavClick(page);
+                                    handleCloseNavMenu();
                                 }}
+
+                                sx={linkUnderlineEffect}
                             >
                                 {page}
                             </Button>
@@ -130,15 +124,25 @@ function ResponsiveAppBar() {
                     </Box>
                     <ThemeToggleButton/>
                     <Box sx={{ flexGrow: 0, paddingRight: '2rem' }}>
-                        <Tooltip title="Portfolio Amount">
-                            <Typography>$ {totalPortfolioValue}</Typography>
+                        <Tooltip title="Wallet">
+                            <Box
+                                sx={linkUnderlineEffect}
+                                onClick={()=> router.push("/wallet")}
+                            >
+                            <Typography><AccountBalanceWalletIcon/> $ {totalPortfolioValue}</Typography>
+                            </Box>
                         </Tooltip>
                     </Box>
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Open settings">
-                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-                            </IconButton>
+                            <Box
+                                sx={circleLineEffect}
+                            >
+                                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                    <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                                </IconButton>
+                            </Box>
+
                         </Tooltip>
                         <Menu
                             sx={{ mt: '45px' }}
