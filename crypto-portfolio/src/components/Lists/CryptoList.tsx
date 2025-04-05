@@ -1,3 +1,4 @@
+'use client';
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import {
     Container,
@@ -13,9 +14,13 @@ import {
     Button
 } from "@mui/material";
 import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 import {formatLargeNumber, formatPriceChangePercent} from "@/utils/formaters";
 import {useTheme} from "@mui/system";
 import FilterSearchBar from "@/components/Search/FilterSearchBar";
+import {linkUnderlineEffect} from "@/utils/animations";
+import {useSelector} from "react-redux";
+import {selectWatchlistItems} from "@/redux/portfolioSelectors";
 
 const CryptoList = ({ cryptos, setPage, loading, setLoading, onRowClick }: { cryptos: Crypto[], setPage: React.Dispatch<React.SetStateAction<number>>, loading: boolean, setLoading: React.Dispatch<React.SetStateAction<boolean>>, onRowClick: (id:string) => void }) => {
     const theme = useTheme(); // custom theme
@@ -31,6 +36,14 @@ const CryptoList = ({ cryptos, setPage, loading, setLoading, onRowClick }: { cry
         small: 1000000000, // $1 Billiob
         medium: 10000000000, // $10 Billion
         large: 50000000000, // $50 Billion
+    };
+
+    const watchListItems = useSelector(selectWatchlistItems);
+
+    const isInWatchlist = (cryptoName: string): boolean => {
+        return watchListItems.some((item: WatchlistItem) => {
+            return item.coin.name === cryptoName && item.selected;
+        });
     };
 
     // Function to detect when the list is scrolled to the bottom
@@ -131,11 +144,6 @@ const CryptoList = ({ cryptos, setPage, loading, setLoading, onRowClick }: { cry
         return { visibleItems, totalHeight, startOffset };
     };
 
-    const handleWatchList = (cryptoData: Crypto) => {
-        console.log("watch list: " + cryptoData.name);
-        //TODO: Add this to wallet dispatch
-    }
-
     const { visibleItems, totalHeight, startOffset } = getVisibleItems();
 
     return (
@@ -170,12 +178,13 @@ const CryptoList = ({ cryptos, setPage, loading, setLoading, onRowClick }: { cry
                 </Typography>
             </Paper>
             {/* Cryptocurrency Table */}
-            <Paper sx={{ mb: 4, borderRadius: 3, overflowY: "auto", maxHeight: "400px" }} elevation={4} ref={listRef}>
+            <Paper sx={{ mb: 4, borderRadius: 3, overflowY: "auto", maxHeight: "400px", backgroundColor: theme.palette.background.paper,}} elevation={4} ref={listRef}>
                 <Table sx={{ minWidth: 650 }} size="small" aria-label="cryptocurrency table">
                     <TableHead>
                         <TableRow>
                             <TableCell>
                                 <TableSortLabel
+                                    sx={{fontWeight: "bold"}}
                                     active={sortConfig?.key === "name"}
                                     direction={sortConfig?.key === "name" ? sortConfig.direction : "asc"}
                                     onClick={() => handleSort("name")}
@@ -185,6 +194,7 @@ const CryptoList = ({ cryptos, setPage, loading, setLoading, onRowClick }: { cry
                             </TableCell>
                             <TableCell>
                                 <TableSortLabel
+                                    sx={{fontWeight: "bold"}}
                                     active={sortConfig?.key === "symbol"}
                                     direction={sortConfig?.key === "symbol" ? sortConfig.direction : "asc"}
                                     onClick={() => handleSort("symbol")}
@@ -194,6 +204,7 @@ const CryptoList = ({ cryptos, setPage, loading, setLoading, onRowClick }: { cry
                             </TableCell>
                             <TableCell>
                                 <TableSortLabel
+                                    sx={{fontWeight: "bold"}}
                                     active={sortConfig?.key === "current_price"}
                                     direction={sortConfig?.key === "current_price" ? sortConfig.direction : "asc"}
                                     onClick={() => handleSort("current_price")}
@@ -203,6 +214,7 @@ const CryptoList = ({ cryptos, setPage, loading, setLoading, onRowClick }: { cry
                             </TableCell>
                             <TableCell>
                                 <TableSortLabel
+                                    sx={{fontWeight: "bold"}}
                                     active={sortConfig?.key === "market_cap"}
                                     direction={sortConfig?.key === "market_cap" ? sortConfig.direction : "asc"}
                                     onClick={() => handleSort("market_cap")}
@@ -212,6 +224,7 @@ const CryptoList = ({ cryptos, setPage, loading, setLoading, onRowClick }: { cry
                             </TableCell>
                             <TableCell>
                                 <TableSortLabel
+                                    sx={{fontWeight: "bold"}}
                                     active={sortConfig?.key === "price_change_percentage_24h"}
                                     direction={sortConfig?.key === "price_change_percentage_24h" ? sortConfig.direction : "asc"}
                                     onClick={() => handleSort("price_change_percentage_24h")}
@@ -230,23 +243,21 @@ const CryptoList = ({ cryptos, setPage, loading, setLoading, onRowClick }: { cry
                                 )}
 
                                 {/* Only render visible items */}
-                                {visibleItems.map((crypto: Crypto) => (
+                                {visibleItems.map((crypto: Crypto, index) => (
                                     <TableRow
-                                        key={crypto.id}
+                                        key={`${crypto.name}-${index}`}
                                         sx={{
                                             '&:last-child td, &:last-child th': { border: 0 },
                                             '&:hover': {
                                                 backgroundColor: theme.palette.action.hover,
                                                 cursor: 'pointer',
-                                            }
+                                            },
+                                            ...linkUnderlineEffect
                                         }}
                                         onClick={() => onRowClick(crypto.id)}
                                     >
                                         <TableCell>
-                                            <StarIcon style={{ marginRight: '8px', cursor: 'pointer' }} onClick={(e) => {
-                                                e.stopPropagation(); // Prevent navigation on star click
-                                                handleWatchList(crypto);
-                                            }} />
+                                            {isInWatchlist(crypto.name) ? <StarIcon/> : <StarBorderIcon/> }
                                             {crypto.name}
                                         </TableCell>
                                         <TableCell>{crypto.symbol.toUpperCase()}</TableCell>

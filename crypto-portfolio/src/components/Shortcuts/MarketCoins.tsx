@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import React from "react";
+import {useTheme} from "@mui/system";
 
 // Dummy data
 const coins = [
@@ -36,6 +37,8 @@ const coins = [
 ];
 
 const MarketCoins = () => {
+    const theme = useTheme(); // custom theme
+
     return (
         <Container maxWidth="lg" sx={{ mt: 4 }}>
             <Paper
@@ -43,6 +46,7 @@ const MarketCoins = () => {
                 sx={{
                     p: { xs: 2, sm: 3 },
                     borderRadius: 3,
+                    backgroundColor: theme.palette.background.paper,
                 }}
             >
                 {/* Header */}

@@ -2,16 +2,6 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface PortfolioItem {
-    id: string | number;
-    type: 'portfolio';
-}
-
-interface WatchlistItem {
-    id: string | number;
-    type: 'watchlist';
-}
-
 type Item = PortfolioItem | WatchlistItem;
 
 interface PortfolioState {

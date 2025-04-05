@@ -2,6 +2,6 @@ interface PortfolioItem {
     id: string | number;
     type: 'portfolio';
     coin: CryptoCurrency;
-    price: number;
+    price: string;
     quantity: number;
 }

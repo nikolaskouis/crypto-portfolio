@@ -31,7 +31,18 @@ interface IFilterSearchBarProps {
     setSortConfig: (sortConfig: { key: keyof Crypto; direction: "asc" | "desc" } | null) => void;
 }
 
-const FilterSearchBar : React.FC<IFilterSearchBarProps> = ({cryptos, sortConfig, setSortConfig, search, performanceFilter, setPerformanceFilter, setMarketCapFilter, marketCapFilter, setSearch, setPriceRange, priceRange}) => {
+const FilterSearchBar : React.FC<IFilterSearchBarProps> = ({
+                                                               cryptos,
+                                                               sortConfig,
+                                                               setSortConfig,
+                                                               search,
+                                                               performanceFilter,
+                                                               setPerformanceFilter,
+                                                               setMarketCapFilter,
+                                                               marketCapFilter,
+                                                               setSearch,
+                                                               setPriceRange,
+                                                               priceRange}) => {
     const theme = useTheme();
     const [showAdvanced, setShowAdvanced] = useState(false);
     const maxPrice = Math.max(...cryptos.map((crypto :Crypto) => crypto.current_price));
