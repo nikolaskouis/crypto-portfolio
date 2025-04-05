@@ -266,8 +266,13 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
     //Made custom skeleton for the loading
     if (loading || error) {
         return (
-            <Box sx={{ maxWidth: 1200, mx: "auto", px: 2, py: 3 }}>
+            <Box data-testid="crypto-detail-skeleton" sx={{ maxWidth: 1200, mx: "auto", px: 2, py: 3 }}>
                 <CryptoDetailSkeleton/>
+                <Snackbar open={Boolean(error)} onClose={() => setError("")}>
+                    <Alert onClose={() => setError("")} severity="error">
+                        {error}
+                    </Alert>
+                </Snackbar>
             </Box>
         );
     }
@@ -278,7 +283,9 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
                 <Typography variant="h5" fontWeight="bold">Coin Details</Typography>
                 <Box display="flex">
-                    <Button sx={{color: "text.primary"}} onClick={()=> {
+                    <Button
+                        aria-label={watchList ? "remove from watchlist" : "add to watchlist"}
+                        sx={{color: "text.primary"}} onClick={()=> {
                         handleSnackBar("watchlist");
                         toggleWatchList();
                     }}> {watchList ? <StarIcon/> : <StarBorderIcon/>}</Button>
@@ -328,8 +335,9 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                             style={{ position: 'relative' }}
                         >
                             <Button
+                                data-testid="buy-button"
                                 variant="contained"
-                                color="primary"
+                                color="secondary"
                                 sx={{ borderRadius: 28 }}
                                 fullWidth
                             >
@@ -378,7 +386,6 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                         elevation={0}
                         sx={{
                             p: 2,
-                            backgroundColor: "background.paper",
                             borderRadius: 2,
                             height: "100%",
                             display: "flex",
@@ -395,7 +402,6 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                         elevation={0}
                         sx={{
                             p: 2,
-                            backgroundColor: "background.paper",
                             borderRadius: 2,
                             height: "100%",
                             display: "flex",
@@ -411,7 +417,6 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                         elevation={0}
                         sx={{
                             p: 2,
-                            backgroundColor: "background.paper",
                             borderRadius: 2,
                             height: "100%",
                             display: "flex",
@@ -427,7 +432,6 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                         elevation={0}
                         sx={{
                             p: 2,
-                            backgroundColor: "background.paper",
                             borderRadius: 2,
                             height: "100%",
                             display: "flex",
@@ -443,7 +447,6 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                         elevation={0}
                         sx={{
                             p: 2,
-                            backgroundColor: "background.paper",
                             borderRadius: 2,
                             height: "100%",
                             display: "flex",
@@ -459,7 +462,6 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                         elevation={0}
                         sx={{
                             p: 2,
-                            backgroundColor: "background.paper",
                             borderRadius: 2,
                             height: "100%",
                             display: "flex",
@@ -485,7 +487,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                             variant={selectedTimeframe === time ? "filled" : "outlined"}
                             sx={{
                                 borderRadius: 1,
-                                backgroundColor: selectedTimeframe === time ? 'primary.main' : 'transparent',
+                                backgroundColor: selectedTimeframe === time ? 'secondary.main' : 'transparent',
                                 color: selectedTimeframe === time ? 'white' : 'inherit'
                             }}
                         />
@@ -525,13 +527,6 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                     Added to {snackBarValue}!
                 </Alert>
             </Snackbar>
-
-            <Snackbar open={Boolean(error)} onClose={() => setError("")}>
-                <Alert onClose={() => setError("")} severity="error">
-                    Error: {error}
-                </Alert>
-            </Snackbar>
-
         </Box>
     );
 };
