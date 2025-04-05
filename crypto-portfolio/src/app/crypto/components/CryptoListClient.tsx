@@ -1,5 +1,5 @@
-'use client';
-import React, { useEffect, useRef, useState, useCallback } from "react";
+"use client";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import {
     Container,
     Table,
@@ -11,7 +11,7 @@ import {
     Typography,
     Paper,
     CircularProgress,
-    Button
+    Alert
 } from "@mui/material";
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
@@ -21,66 +21,77 @@ import FilterSearchBar from "@/components/Search/FilterSearchBar";
 import {linkUnderlineEffect} from "@/utils/animations";
 import {useSelector} from "react-redux";
 import {selectWatchlistItems} from "@/redux/portfolioSelectors";
+import {useRouter} from "next/navigation";
+import {fetchCryptos} from "@/services/api";
 
-const CryptoList = ({ cryptos, setPage, loading, setLoading, onRowClick }: { cryptos: Crypto[], setPage: React.Dispatch<React.SetStateAction<number>>, loading: boolean, setLoading: React.Dispatch<React.SetStateAction<boolean>>, onRowClick: (id:string) => void }) => {
+interface CryptoListClientProps {
+    initialCryptos: Crypto[];
+}
+
+export default function CryptoListClient({ initialCryptos }: CryptoListClientProps) {
     const theme = useTheme(); // custom theme
+    const router = useRouter();
     const [search, setSearch] = useState("");
     const [sortConfig, setSortConfig] = useState<{ key: keyof Crypto; direction: "asc" | "desc" } | null>(null);
-    const [marketCapFilter, setMarketCapFilter] = useState<string>("all");
-    const [priceRange, setPriceRange] = useState<[number, number]>([0, 100000]);
-    const [performanceFilter, setPerformanceFilter] = useState<string>("all");
     const listRef = useRef<HTMLDivElement | null>(null);
-    const [visibleRange, setVisibleRange] = useState<[number, number]>([0, 20]);
-    const marketCapCategories = {
-        all: 0,
-        small: 1000000000, // $1 Billiob
-        medium: 10000000000, // $10 Billion
-        large: 50000000000, // $50 Billion
-    };
+    const [cryptos, setCryptos] = useState<Crypto[]>(() => initialCryptos);
+    const [filteredCryptos, setFilteredCrypto] = useState<Crypto[]>(() => initialCryptos);
+    const [page, setPage] = useState(2); // already fetched page 1 on SSR
+    const [isFetching, setIsFetching] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+    const loaderRef = useRef<HTMLDivElement | null>(null);
 
     const watchListItems = useSelector(selectWatchlistItems);
 
-    const isInWatchlist = (cryptoName: string): boolean => {
-        return watchListItems.some((item: WatchlistItem) => {
-            return item.coin.name === cryptoName && item.selected;
-        });
-    };
-
-    // Function to detect when the list is scrolled to the bottom
-    const handleScroll = useCallback(() => {
-        if (listRef.current) {
-            const scrollPosition = listRef.current.scrollTop + listRef.current.clientHeight;
-            const bottomPosition = listRef.current.scrollHeight;
-
-            if (scrollPosition >= bottomPosition - 50 && !loading) {
-                // Trigger next page load
-                setLoading(true);
-                setPage((prevPage) => prevPage + 1);
+    useEffect(() => {
+        const observer = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting && hasMore && !isFetching) {
+                setIsFetching(true);
+                setPage(prev => prev + 1);
             }
+        }, { threshold: 1.0 });
 
-            const rowHeight = 53; // Approximate height of each row in pixels
-            const containerHeight = listRef.current.clientHeight;
-            const scrollTop = listRef.current.scrollTop;
-
-            const buffer = 10;
-            const startIndex = Math.max(0, Math.floor(scrollTop / rowHeight) - buffer);
-            const visibleCount = Math.ceil(containerHeight / rowHeight) + (buffer * 2);
-
-            setVisibleRange([startIndex, startIndex + visibleCount]);
+        const currentLoader = loaderRef.current;
+        if (currentLoader) {
+            observer.observe(currentLoader);
         }
-    }, [loading, setLoading, setPage]);
+
+        return () => {
+            if (currentLoader) observer.unobserve(currentLoader);
+        };
+    }, [hasMore, isFetching]);
+
 
     useEffect(() => {
-        const currentRef = listRef.current;
-        currentRef?.addEventListener("scroll", handleScroll);
-
-        handleScroll();
-
-        // Cleanup
-        return () => {
-            currentRef?.removeEventListener("scroll", handleScroll);
+        const fetchMoreCryptos = async () => {
+            try {
+                const newCryptos = await fetchCryptos(page, 20);
+                console.log(newCryptos);
+                if (newCryptos.length < 20) setHasMore(false);
+                setCryptos(prev => [...prev, ...newCryptos]);
+                setFilteredCrypto(prev => [...prev, ...newCryptos]);
+            } catch (error) {
+                console.error("Error fetching more cryptos:", error);
+                setHasMore(false);
+            } finally {
+                setIsFetching(false);
+            }
         };
-    }, [handleScroll]);
+        if (page > 1) fetchMoreCryptos();
+    }, [page]);
+
+    useEffect(() => {
+        setCryptos(initialCryptos);
+        setFilteredCrypto(initialCryptos);
+    }, [initialCryptos]);
+
+    const watchListSet = useMemo(() => {
+        return new Set(watchListItems.filter((item: WatchlistItem) => item.selected).map((item: WatchlistItem) => item.coin.name));
+    }, [watchListItems]);
+
+    const navigateToDetails = (id: string) => {
+        router.push(`/crypto/${id}`);
+    };
 
     const handleSort = (key: keyof Crypto) => {
         setSortConfig((prev) => ({
@@ -88,34 +99,6 @@ const CryptoList = ({ cryptos, setPage, loading, setLoading, onRowClick }: { cry
             direction: prev?.key === key && prev.direction === "asc" ? "desc" : "asc",
         }));
     };
-
-    // Main Filtering
-    const filteredCryptos = cryptos.filter((crypto) => {
-        // Search filter
-        const matchesSearch =
-            crypto.name.toLowerCase().includes(search.toLowerCase()) ||
-            crypto.symbol.toLowerCase().includes(search.toLowerCase());
-
-        // Market cap filter
-        const matchesMarketCap =
-            marketCapFilter === "all" ||
-            (marketCapFilter === "small" && crypto.market_cap < marketCapCategories.medium) ||
-            (marketCapFilter === "medium" && crypto.market_cap >= marketCapCategories.medium && crypto.market_cap < marketCapCategories.large) ||
-            (marketCapFilter === "large" && crypto.market_cap >= marketCapCategories.large);
-
-        // Price range filter
-        const matchesPriceRange =
-            crypto.current_price >= priceRange[0] &&
-            crypto.current_price <= priceRange[1];
-
-        // Performance filter
-        const matchesPerformance =
-            performanceFilter === "all" ||
-            (performanceFilter === "positive" && crypto.price_change_percentage_24h > 0) ||
-            (performanceFilter === "negative" && crypto.price_change_percentage_24h < 0);
-
-        return matchesSearch && matchesMarketCap && matchesPriceRange && matchesPerformance;
-    });
 
     // Sort cryptocurrencies
     const sortedCryptos = [...filteredCryptos].sort((a, b) => {
@@ -132,20 +115,6 @@ const CryptoList = ({ cryptos, setPage, loading, setLoading, onRowClick }: { cry
         return 0;
     });
 
-    // Get visible items with a placeholder for estimated total height
-    const getVisibleItems = () => {
-        const [start, end] = visibleRange;
-        const visibleItems = sortedCryptos.slice(start, end);
-
-        // Calculate heights for virtualized scrolling
-        const totalHeight = sortedCryptos.length * 53; // 53px apprx
-        const startOffset = start * 53;
-
-        return { visibleItems, totalHeight, startOffset };
-    };
-
-    const { visibleItems, totalHeight, startOffset } = getVisibleItems();
-
     return (
         <Container maxWidth="lg" sx={{paddingBottom: "1rem", paddingTop: "1rem"}}>
             <Paper
@@ -154,31 +123,26 @@ const CryptoList = ({ cryptos, setPage, loading, setLoading, onRowClick }: { cry
                     mb: 4,
                     mt: 2,
                     borderRadius: 3,
-                    backgroundColor: theme.palette.background.paper,
+                    backgroundColor: theme?.palette?.background?.paper ?? '#fff',
                 }}
                 elevation={4}
             >
                 <FilterSearchBar
-                    cryptos={sortedCryptos}
+                    cryptos={cryptos}
+                    setFilteredCrypto={setFilteredCrypto}
                     setSortConfig={setSortConfig}
                     sortConfig={sortConfig}
-                    setPerformanceFilter={setPerformanceFilter}
                     search={search}
                     setSearch={setSearch}
-                    performanceFilter={performanceFilter}
-                    priceRange={priceRange}
-                    setPriceRange={setPriceRange}
-                    setMarketCapFilter={setMarketCapFilter}
-                    marketCapFilter={marketCapFilter}
                 />
 
                 {/* Showing Count */}
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    Showing {sortedCryptos.length} out of {cryptos.length} cryptocurrencies
+                    Showing {filteredCryptos.length} out of {cryptos.length} cryptocurrencies
                 </Typography>
             </Paper>
             {/* Cryptocurrency Table */}
-            <Paper sx={{ mb: 4, borderRadius: 3, overflowY: "auto", maxHeight: "400px", backgroundColor: theme.palette.background.paper,}} elevation={4} ref={listRef}>
+            <Paper sx={{ mb: 4, borderRadius: 3, overflowY: "auto", maxHeight: "400px", backgroundColor: theme?.palette?.background?.paper ?? '#fff',}} elevation={4} ref={listRef}>
                 <Table sx={{ minWidth: 650 }} size="small" aria-label="cryptocurrency table">
                     <TableHead>
                         <TableRow>
@@ -237,27 +201,21 @@ const CryptoList = ({ cryptos, setPage, loading, setLoading, onRowClick }: { cry
                     <TableBody>
                         {sortedCryptos.length > 0 ? (
                             <>
-                                {/* Spacer */}
-                                {startOffset > 0 && (
-                                    <tr style={{ height: `${startOffset}px` }} />
-                                )}
-
-                                {/* Only render visible items */}
-                                {visibleItems.map((crypto: Crypto, index) => (
+                                {sortedCryptos.map((crypto: Crypto, index) => (
                                     <TableRow
                                         key={`${crypto.name}-${index}`}
                                         sx={{
                                             '&:last-child td, &:last-child th': { border: 0 },
                                             '&:hover': {
-                                                backgroundColor: theme.palette.action.hover,
+                                                backgroundColor: theme?.palette?.background?.paper ?? '#fff',
                                                 cursor: 'pointer',
                                             },
                                             ...linkUnderlineEffect
                                         }}
-                                        onClick={() => onRowClick(crypto.id)}
+                                        onClick={() => navigateToDetails(crypto.id)}
                                     >
                                         <TableCell>
-                                            {isInWatchlist(crypto.name) ? <StarIcon/> : <StarBorderIcon/> }
+                                            {watchListSet.has(crypto.name) ? <StarIcon/> : <StarBorderIcon/> }
                                             {crypto.name}
                                         </TableCell>
                                         <TableCell>{crypto.symbol.toUpperCase()}</TableCell>
@@ -276,21 +234,20 @@ const CryptoList = ({ cryptos, setPage, loading, setLoading, onRowClick }: { cry
                                 </TableCell>
                             </TableRow>
                         )}
-                        {loading && (
+                        {hasMore &&(
                             <TableRow>
                                 <TableCell colSpan={5} align="center">
-                                    <CircularProgress size={24} />
-                                    <Typography variant="body2" sx={{ ml: 1 }}>
-                                        Loading more...
+                                    <Typography ref={loaderRef} style={{ display: 'flex', justifyContent: 'center', padding: '1rem' }}>
+                                        <CircularProgress/>
                                     </Typography>
                                 </TableCell>
                             </TableRow>
-                        )}
+                            )}
                     </TableBody>
                 </Table>
             </Paper>
+
+
         </Container>
     );
 };
-
-export default CryptoList;

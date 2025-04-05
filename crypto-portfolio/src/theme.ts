@@ -1,99 +1,109 @@
-import { createTheme} from "@mui/material/styles";
+import { createTheme } from '@mui/material/styles';
 
 const darkTheme = createTheme({
     palette: {
-        mode: "dark",
+        mode: 'dark',
         primary: {
-            main: "#8AC8FF",
+            main: '#121A27',
         },
         secondary: {
-            main: "#B7DCFF",
+            main: '#50E3C2',
         },
         background: {
-            default: "#080808",
-            paper: "#121318",
+            default: '#0A0E16',
+            paper: '#121A27',
         },
         text: {
-            primary: "#FFFFFF",
-            secondary: "#C9D1D9",
+            primary: '#FFFFFF',
+            secondary: '#A7B6D2',
+        },
+        success: {
+            main: '#00C853',
+        },
+        error: {
+            main: '#FF1744',
         },
     },
-
     typography: {
         fontFamily: "'Inter', 'Roboto', 'Helvetica', 'Arial', sans-serif",
-        h1: { fontWeight: 700, fontSize: "2rem" },
-        h2: { fontWeight: 600, fontSize: "1.5rem" },
-        body1: { fontSize: "1rem" },
-        body2: { fontSize: "0.875rem" },
+        h1: { fontWeight: 700, fontSize: '2rem' },
+        h2: { fontWeight: 600, fontSize: '1.5rem' },
+        body1: { fontSize: '1rem' },
+        body2: { fontSize: '0.875rem' },
     },
     components: {
         MuiCard: {
             styleOverrides: {
                 root: {
                     borderRadius: 16,
-                    backgroundColor: "#06060c",
-                    color: "#FFFFFF",
-                    boxShadow: "0px 2px 8px rgba(0,0,0,0.5)",
+                    backgroundColor: '#162135',
+                    color: '#FFFFFF',
+                    boxShadow: '0px 4px 12px rgba(0,0,0,0.6)',
                 },
             },
         },
         MuiPaper: {
             styleOverrides: {
                 root: {
-                    backgroundColor: "#06060c",
-                    color: "#FFFFFF",
+                    backgroundColor: '#162135',
+                    color: '#FFFFFF',
                 },
             },
         },
-    }
-
+    },
 });
 
 const lightTheme = createTheme({
     palette: {
-        mode: "light",
+        mode: 'light',
         primary: {
-            main: "#062a45",
+            main: '#1976D2',
         },
         secondary: {
-            main: "#E2F2FF",
+            main: '#02C39A',
         },
         background: {
-            default: "#ffffff",
-            paper: "#e6e9f2",
+            default: '#F4F7FA',
+            paper: '#ffffff',
         },
         text: {
-            primary: "#000000",
-            secondary: "#333333",
+            primary: '#172B4D',
+            secondary: '#6B778C',
+        },
+        success: {
+            main: '#00BFA5',
+        },
+        error: {
+            main: '#FF5252',
         },
     },
     typography: {
         fontFamily: "'Inter', 'Roboto', 'Helvetica', 'Arial', sans-serif",
-        h1: { fontWeight: 700, fontSize: "2rem" },
-        h2: { fontWeight: 600, fontSize: "1.5rem" },
-        body1: { fontSize: "1rem" },
-        body2: { fontSize: "0.875rem" },
+        h1: { fontWeight: 700, fontSize: '2rem' },
+        h2: { fontWeight: 600, fontSize: '1.5rem' },
+        body1: { fontSize: '1rem' },
+        body2: { fontSize: '0.875rem' },
     },
     components: {
         MuiCard: {
             styleOverrides: {
                 root: {
                     borderRadius: 16,
-                    backgroundColor: "#f6efef",
-                    color: "#221f1f",
-                    boxShadow: "0px 2px 8px rgba(0,0,0,0.5)",
+                    backgroundColor: '#FFFFFF',
+                    color: '#172B4D',
+                    boxShadow: '0px 4px 12px rgba(0,0,0,0.2)',
                 },
             },
         },
         MuiPaper: {
             styleOverrides: {
                 root: {
-                    backgroundColor: "#f6efef",
-                    color: "#221f1f",
+                    backgroundColor: '#FFFFFF',
+                    color: '#172B4D',
                 },
             },
         },
-    }
+    },
 });
 
 export { darkTheme, lightTheme };

@@ -6,10 +6,10 @@ import {circleLineEffect, footerUnderlineEffect, linkUnderlineEffect} from "@/ut
 
 const Footer = () => {
     const theme = useTheme();
-    const color = theme.palette.secondary.main;
+    const color = theme.palette.text.primary;
     return (
         <Card sx={{ backgroundColor: (theme) => theme.palette.primary.main,
-            color:color, p: 4 }}>
+            color:color, p: 2, borderRadius: 0 }}>
             <Grid container spacing={3} display="flex" justifyContent="space-around">
 
                 {/* Support Section */}
@@ -30,9 +30,6 @@ const Footer = () => {
                         <Link href="#" sx={footerUnderlineEffect}>About Us</Link>
                         <Link href="#" sx={footerUnderlineEffect}>Careers</Link>
                         <Link href="#" sx={footerUnderlineEffect}>News</Link>
-                        <Link href="#" sx={footerUnderlineEffect}>Security</Link>
-                        <Link href="#" sx={footerUnderlineEffect}>Community</Link>
-                        <Link href="#" sx={footerUnderlineEffect}>Announcements</Link>
                     </Box>
                 </Grid>
 
@@ -43,8 +40,6 @@ const Footer = () => {
                         <Link href="#" sx={footerUnderlineEffect}>Bitcoin</Link>
                         <Link href="#" sx={footerUnderlineEffect}>Ethereum</Link>
                         <Link href="#" sx={footerUnderlineEffect}>Tether</Link>
-                        <Link href="#" sx={footerUnderlineEffect}>Solana</Link>
-                        <Link href="#" sx={footerUnderlineEffect}>Dogecoin</Link>
                     </Box>
                 </Grid>
             </Grid>
