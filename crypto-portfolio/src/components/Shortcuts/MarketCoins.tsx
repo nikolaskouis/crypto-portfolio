@@ -7,33 +7,34 @@ import {
     Paper,
     Typography,
     Card,
-} from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import React from "react";
-import {useTheme} from "@mui/system";
+} from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import React from 'react';
+import { useTheme } from '@mui/system';
+import { hoverLineEffect } from '@/utils/animations';
 
 // Dummy data
 const coins = [
     {
-        name: "Bitcoin",
-        icon: "🟠",
-        price: "$38,447.54",
-        change: "+2%",
-        changeColor: "green",
+        name: 'Bitcoin',
+        icon: '🟠',
+        price: '$38,447.54',
+        change: '+2%',
+        changeColor: 'green',
     },
     {
-        name: "Avalanche",
-        icon: "🔴",
-        price: "$38,447.54",
-        change: "-2%",
-        changeColor: "red",
+        name: 'Avalanche',
+        icon: '🔴',
+        price: '$38,447.54',
+        change: '-2%',
+        changeColor: 'red',
     },
     {
-        name: "Binance",
-        icon: "🟡",
-        price: "$38,447.54",
-        change: "+2%",
-        changeColor: "green",
+        name: 'Binance',
+        icon: '🟡',
+        price: '$38,447.54',
+        change: '+2%',
+        changeColor: 'green',
     },
 ];
 
@@ -53,9 +54,9 @@ const MarketCoins = () => {
                 {/* Header */}
                 <Box
                     display="flex"
-                    flexDirection={{ xs: "column", sm: "row" }}
+                    flexDirection={{ xs: 'column', sm: 'row' }}
                     justifyContent="space-between"
-                    alignItems={{ xs: "flex-start", sm: "center" }}
+                    alignItems={{ xs: 'flex-start', sm: 'center' }}
                     mb={3}
                     gap={2}
                 >
@@ -72,18 +73,19 @@ const MarketCoins = () => {
                     <Paper
                         component="form"
                         sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            width: { xs: "100%", sm: 250 },
+                            display: 'flex',
+                            alignItems: 'center',
+                            width: { xs: '100%', sm: 250 },
                             borderRadius: 2,
                             px: 1,
+                            ...hoverLineEffect,
                         }}
                     >
                         <SearchIcon />
                         <InputBase
                             sx={{ ml: 1, flex: 1, py: 0.5 }}
                             placeholder="Search..."
-                            inputProps={{ "aria-label": "search coin" }}
+                            inputProps={{ 'aria-label': 'search coin' }}
                         />
                     </Paper>
                 </Box>
@@ -91,24 +93,26 @@ const MarketCoins = () => {
                 {/* Coins */}
                 <Grid container spacing={2}>
                     {coins.map((coin, index) => (
-                        <Grid
-                            key={index}
-                            sx={{ display: "flex" }}
-                        >
+                        <Grid key={index} sx={{ display: 'flex' }}>
                             <Card
                                 elevation={4}
                                 sx={{
-                                    padding: "1rem",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    justifyContent: "space-between",
-                                    width: "100%",
+                                    padding: '1rem',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'space-between',
+                                    width: '100%',
                                     flexGrow: 1,
+                                    ...hoverLineEffect,
                                 }}
                             >
                                 <Box display="flex" alignItems="center" gap={1}>
-                                    <Typography fontSize={24}>{coin.icon}</Typography>
-                                    <Typography variant="h6">{coin.name}</Typography>
+                                    <Typography fontSize={24}>
+                                        {coin.icon}
+                                    </Typography>
+                                    <Typography variant="h6">
+                                        {coin.name}
+                                    </Typography>
                                 </Box>
                                 <Typography variant="h6" fontWeight={600}>
                                     {coin.price}
@@ -117,10 +121,13 @@ const MarketCoins = () => {
                                     variant="body2"
                                     sx={{
                                         color:
-                                            coin.changeColor === "green" ? "#4CAF50" : "#F44336",
+                                            coin.changeColor === 'green'
+                                                ? '#4CAF50'
+                                                : '#F44336',
                                     }}
                                 >
-                                    {coin.change} {coin.changeColor === "green" ? "📈" : "📉"}
+                                    {coin.change}{' '}
+                                    {coin.changeColor === 'green' ? '📈' : '📉'}
                                 </Typography>
                             </Card>
                         </Grid>

@@ -1,4 +1,4 @@
-"use effect";
+'use effect';
 import * as React from 'react';
 import {
     AppBar,
@@ -11,16 +11,17 @@ import {
     Avatar,
     Button,
     Tooltip,
-    MenuItem
+    MenuItem,
 } from '@mui/material';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import MenuIcon from '@mui/icons-material/Menu';
-import {useSelector} from "react-redux";
-import Logo from "@/components/Logo";
-import ThemeToggleButton from "../Buttons/ThemeToggleButton";
-import {selectPortfolioItems} from "@/redux/portfolioSelectors";
-import {useRouter} from "next/navigation";
-import {circleLineEffect, linkUnderlineEffect} from "@/utils/animations";
+import { useSelector } from 'react-redux';
+import Logo from '@/components/Logo';
+import ThemeToggleButton from '../Buttons/ThemeToggleButton';
+import { selectPortfolioItems } from '@/redux/portfolioSelectors';
+import { useRouter } from 'next/navigation';
+import { circleLineEffect, linkUnderlineEffect } from '@/utils/animations';
+import { formatNumberWithCommas } from '@/utils/formaters';
 
 const pages = ['Lists', 'Wallet'];
 const settings = ['Profile', 'Account', 'Settings', 'Logout'];
@@ -28,18 +29,23 @@ const settings = ['Profile', 'Account', 'Settings', 'Logout'];
 //MUI Responsive Bar
 function ResponsiveAppBar() {
     const router = useRouter();
-    const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-    const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+    const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
+        null
+    );
+    const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+        null
+    );
 
     const portfolioItems = useSelector(selectPortfolioItems);
 
-    const totalPortfolioValue = portfolioItems.reduce((total: number, item: PortfolioItem) => {
-        return item.price;
-    }, 0);
+    const totalPortfolioValue = portfolioItems.reduce(
+        (total: number, item: PortfolioItem) => item.price,
+        0
+    );
 
     const handleNavClick = (page: string) => {
-        if (page === "Lists") router.push("/");
-        else if (page === "Wallet") router.push("/wallet");
+        if (page === 'Lists') router.push('/');
+        else if (page === 'Wallet') router.push('/wallet');
     };
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -61,16 +67,16 @@ function ResponsiveAppBar() {
         <AppBar position="static">
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="a"
-                        href="/"
-                    >
-                        <Logo/>
+                    <Typography variant="h6" noWrap component="a" href="/">
+                        <Logo />
                     </Typography>
 
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+                    <Box
+                        sx={{
+                            flexGrow: 1,
+                            display: { xs: 'flex', md: 'none' },
+                        }}
+                    >
                         <IconButton
                             size="large"
                             aria-label="account of current user"
@@ -97,17 +103,26 @@ function ResponsiveAppBar() {
                             onClick={() => {
                                 handleCloseNavMenu();
                             }}
-
                             sx={{ display: { xs: 'block', md: 'none' } }}
                         >
                             {pages.map((page) => (
-                                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                                    <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
+                                <MenuItem
+                                    key={page}
+                                    onClick={handleCloseNavMenu}
+                                >
+                                    <Typography sx={{ textAlign: 'center' }}>
+                                        {page}
+                                    </Typography>
                                 </MenuItem>
                             ))}
                         </Menu>
                     </Box>
-                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                    <Box
+                        sx={{
+                            flexGrow: 1,
+                            display: { xs: 'none', md: 'flex' },
+                        }}
+                    >
                         {pages.map((page) => (
                             <Button
                                 key={page}
@@ -115,34 +130,41 @@ function ResponsiveAppBar() {
                                     handleNavClick(page);
                                     handleCloseNavMenu();
                                 }}
-
                                 sx={linkUnderlineEffect}
                             >
                                 {page}
                             </Button>
                         ))}
                     </Box>
-                    <ThemeToggleButton/>
+                    <ThemeToggleButton />
                     <Box sx={{ flexGrow: 0, paddingRight: '2rem' }}>
                         <Tooltip title="Wallet">
                             <Box
                                 sx={linkUnderlineEffect}
-                                onClick={()=> router.push("/wallet")}
+                                onClick={() => router.push('/wallet')}
                             >
-                            <Typography><AccountBalanceWalletIcon/> $ {totalPortfolioValue}</Typography>
+                                <Typography>
+                                    <AccountBalanceWalletIcon /> ${' '}
+                                    {formatNumberWithCommas(
+                                        totalPortfolioValue
+                                    )}
+                                </Typography>
                             </Box>
                         </Tooltip>
                     </Box>
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Open settings">
-                            <Box
-                                sx={circleLineEffect}
-                            >
-                                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                    <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                            <Box sx={circleLineEffect}>
+                                <IconButton
+                                    onClick={handleOpenUserMenu}
+                                    sx={{ p: 0 }}
+                                >
+                                    <Avatar
+                                        alt="Remy Sharp"
+                                        src="/static/images/avatar/2.jpg"
+                                    />
                                 </IconButton>
                             </Box>
-
                         </Tooltip>
                         <Menu
                             sx={{ mt: '45px' }}
@@ -161,8 +183,13 @@ function ResponsiveAppBar() {
                             onClose={handleCloseUserMenu}
                         >
                             {settings.map((setting) => (
-                                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                                    <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
+                                <MenuItem
+                                    key={setting}
+                                    onClick={handleCloseUserMenu}
+                                >
+                                    <Typography sx={{ textAlign: 'center' }}>
+                                        {setting}
+                                    </Typography>
                                 </MenuItem>
                             ))}
                         </Menu>

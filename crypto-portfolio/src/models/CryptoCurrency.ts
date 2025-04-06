@@ -5,10 +5,13 @@ interface CryptoCurrency {
     web_slug: string;
     asset_platform_id: string | null;
     platforms: Record<string, string>;
-    detail_platforms: Record<string, {
-        contract_address: string;
-        decimal_place: number;
-    }>;
+    detail_platforms: Record<
+        string,
+        {
+            contract_address: string;
+            decimal_place: number;
+        }
+    >;
     block_time_in_minutes: number;
     hashing_algorithm: string | null;
     categories: string[];

@@ -1,8 +1,8 @@
-import { IconButton } from "@mui/material";
-import { Brightness4, Brightness7 } from "@mui/icons-material";
-import {Box} from "@mui/material";
-import { useTheme } from "@/context/ThemeContext";
-import {circleLineEffect} from "@/utils/animations";
+import { IconButton } from '@mui/material';
+import { Brightness4, Brightness7 } from '@mui/icons-material';
+import { Box } from '@mui/material';
+import { useTheme } from '@/context/ThemeContext';
+import { circleLineEffect } from '@/utils/animations';
 
 export default function ThemeToggleButton() {
     const { toggleTheme, isDarkMode } = useTheme();
@@ -11,10 +11,10 @@ export default function ThemeToggleButton() {
         <Box
             sx={{
                 mr: 2,
-                ...circleLineEffect
+                ...circleLineEffect,
             }}
         >
-        <IconButton onClick={toggleTheme} color="inherit">
+            <IconButton onClick={toggleTheme} color="inherit">
                 {isDarkMode ? <Brightness7 /> : <Brightness4 />}
             </IconButton>
         </Box>
