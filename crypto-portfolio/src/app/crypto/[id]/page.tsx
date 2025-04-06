@@ -1,4 +1,5 @@
 // app/crypto/[id]/page.tsx
+import React from 'react';
 import CryptoDetail from '@/components/Details/CryptoDetail';
 
 interface Props {

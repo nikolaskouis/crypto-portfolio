@@ -1,3 +1,4 @@
+import React from 'react';
 import { Typography } from '@mui/material';
 
 // Format price + change color, red/green

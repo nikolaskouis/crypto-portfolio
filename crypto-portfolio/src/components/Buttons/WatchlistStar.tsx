@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { selectWatchlistItems } from '@/redux/portfolioSelectors';
 import StarIcon from '@mui/icons-material/Star';
