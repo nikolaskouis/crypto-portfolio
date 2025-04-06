@@ -44,7 +44,7 @@ export default function CryptoListClient({
     const [filteredCryptos, setFilteredCrypto] = useState<Crypto[]>(
         () => initialCryptos
     );
-    const [page, setPage] = useState(1); // already fetched page 1 on SSR
+    const [page, setPage] = useState(1);
     const [isFetching, setIsFetching] = useState(false);
     const [error, setError] = useState('');
     const [hasMore, setHasMore] = useState(true);
@@ -53,25 +53,32 @@ export default function CryptoListClient({
     const watchListItems = useSelector(selectWatchlistItems);
 
     useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting && hasMore && !isFetching) {
-                    setIsFetching(true);
-                    setPage((prev) => prev + 1);
-                }
-            },
-            { threshold: 1.0 }
-        );
+        const handleScroll = () => {
+            const el = listRef.current;
+            if (!el || isFetching || !hasMore) return;
 
-        const currentLoader = loaderRef.current;
-        if (currentLoader) {
-            observer.observe(currentLoader);
+            const scrollBottom = el.scrollTop + el.clientHeight;
+            const scrollHeight = el.scrollHeight;
+
+            // Trigger when near the bottom
+            if (scrollHeight - scrollBottom < 50) {
+                setIsFetching(true);
+                setPage((prev) => prev + 1);
+            }
+        };
+
+        const listElement = listRef.current;
+        if (listElement) {
+            listElement.addEventListener('scroll', handleScroll);
         }
 
         return () => {
-            if (currentLoader) observer.unobserve(currentLoader);
+            if (listElement) {
+                listElement.removeEventListener('scroll', handleScroll);
+            }
         };
-    }, [hasMore, isFetching]);
+    }, [isFetching, hasMore]);
+
 
     useEffect(() => {
         const fetchMoreCryptos = async () => {
@@ -90,6 +97,15 @@ export default function CryptoListClient({
         };
         if (page > 1) fetchMoreCryptos();
     }, [page]);
+
+    useEffect(() => {
+        setPage(1);
+        setHasMore(true);
+        if (listRef.current) {
+            listRef.current.scrollTop = 0;
+        }
+    }, [search, sortConfig]);
+
 
     useEffect(() => {
         setCryptos(initialCryptos);
@@ -323,7 +339,7 @@ export default function CryptoListClient({
                                 </TableCell>
                             </TableRow>
                         )}
-                        {hasMore && (
+                        {isFetching && (
                             <TableRow>
                                 <TableCell colSpan={5} align="center">
                                     <div
