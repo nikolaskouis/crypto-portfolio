@@ -7,7 +7,7 @@ export const circleLineEffect = {
         boxShadow: '0 0 10px rgba(255, 255, 255, 0.4)',
         transform: 'scale(1.05)',
     },
-}
+};
 
 export const linkUnderlineEffect = {
     my: 2,
@@ -38,8 +38,8 @@ export const linkUnderlineEffect = {
 
 export const footerUnderlineEffect = {
     my: 1,
-    display: "block",
-    textDecoration: "none",
+    display: 'block',
+    textDecoration: 'none',
     color: 'white',
     position: 'relative',
     fontWeight: 500,

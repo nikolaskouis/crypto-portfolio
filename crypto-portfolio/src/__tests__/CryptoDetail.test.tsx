@@ -13,27 +13,29 @@ const mockStore = configureStore([]);
 
 // Mock the dynamic import for financial chart
 jest.mock('next/dynamic', () => () => {
-    const DynamicComponent = () => <div data-testid="mocked-chart">Chart Mock</div>;
+    const DynamicComponent = () => (
+        <div data-testid="mocked-chart">Chart Mock</div>
+    );
     return DynamicComponent;
 });
 
 // Mock the API calls
 jest.mock('@/services/api', () => ({
     getCrypto: jest.fn(),
-    fetchGraph: jest.fn()
+    fetchGraph: jest.fn(),
 }));
 
 // Mock Redux dispatch
 jest.mock('react-redux', () => ({
     ...jest.requireActual('react-redux'),
-    useDispatch: () => jest.fn()
+    useDispatch: () => jest.fn(),
 }));
 
 // Mock framer-motion to avoid animation issues in tests
 jest.mock('framer-motion', () => ({
     motion: {
-        div: ({ children, ...props }) => <div {...props}>{children}</div>
-    }
+        div: ({ children, ...props }) => <div {...props}>{children}</div>,
+    },
 }));
 
 describe('CryptoDetail Component', () => {
@@ -42,7 +44,7 @@ describe('CryptoDetail Component', () => {
         name: 'Bitcoin',
         symbol: 'btc',
         image: {
-            small: '/bitcoin-logo.png'
+            small: '/bitcoin-logo.png',
         },
         market_data: {
             current_price: { usd: 50000 },
@@ -52,14 +54,14 @@ describe('CryptoDetail Component', () => {
             total_volume: { btc: 50000000 },
             total_supply: 21000000,
             max_supply: 21000000,
-            circulating_supply: 19000000
+            circulating_supply: 19000000,
         },
-        tickers: [{ last: 50000 }]
+        tickers: [{ last: 50000 }],
     };
 
     const mockChartData = [
         [1617753600000, 50000, 52000, 49000, 51000],
-        [1617840000000, 51000, 53000, 50000, 52000]
+        [1617840000000, 51000, 53000, 50000, 52000],
     ];
 
     let store;
@@ -68,8 +70,8 @@ describe('CryptoDetail Component', () => {
         store = mockStore({
             portfolio: {
                 watchlist: [],
-                portfolio: []
-            }
+                portfolio: [],
+            },
         });
 
         // Reset mocks
@@ -87,7 +89,9 @@ describe('CryptoDetail Component', () => {
             </Provider>
         );
 
-        expect(screen.getByTestId('crypto-detail-skeleton')).toBeInTheDocument();
+        expect(
+            screen.getByTestId('crypto-detail-skeleton')
+        ).toBeInTheDocument();
     });
 
     test('renders crypto details after loading', async () => {
@@ -98,7 +102,9 @@ describe('CryptoDetail Component', () => {
         );
 
         await waitFor(() => {
-            expect(screen.queryByTestId('crypto-detail-skeleton')).not.toBeInTheDocument();
+            expect(
+                screen.queryByTestId('crypto-detail-skeleton')
+            ).not.toBeInTheDocument();
         });
 
         expect(await screen.findByText(/Bitcoin/i)).toBeInTheDocument();
@@ -114,7 +120,9 @@ describe('CryptoDetail Component', () => {
         );
 
         await waitFor(() => {
-            expect(screen.queryByTestId('crypto-detail-skeleton')).not.toBeInTheDocument();
+            expect(
+                screen.queryByTestId('crypto-detail-skeleton')
+            ).not.toBeInTheDocument();
         });
 
         const sevenDaysChip = screen.getByText('7 Days');
@@ -134,15 +142,21 @@ describe('CryptoDetail Component', () => {
         );
 
         await waitFor(() => {
-            expect(screen.queryByTestId('crypto-detail-skeleton')).not.toBeInTheDocument();
+            expect(
+                screen.queryByTestId('crypto-detail-skeleton')
+            ).not.toBeInTheDocument();
         });
 
         // Find and click the watchlist button
-        const watchlistButton = screen.getByRole('button', { name: /watchlist/i });
+        const watchlistButton = screen.getByRole('button', {
+            name: /watchlist/i,
+        });
         fireEvent.click(watchlistButton);
 
         await waitFor(() => {
-            expect(screen.getByText(/Added to watchlist!/i)).toBeInTheDocument();
+            expect(
+                screen.getByText(/Added to watchlist!/i)
+            ).toBeInTheDocument();
         });
     });
 
@@ -154,17 +168,20 @@ describe('CryptoDetail Component', () => {
         );
 
         await waitFor(() => {
-            expect(screen.queryByTestId('crypto-detail-skeleton')).not.toBeInTheDocument();
+            expect(
+                screen.queryByTestId('crypto-detail-skeleton')
+            ).not.toBeInTheDocument();
         });
 
         // Find and click the buy button
         const buyButton = await screen.findByTestId('buy-button');
         fireEvent.click(buyButton);
 
-
         // Check if the snackbar appears with correct message
         await waitFor(() => {
-            expect(screen.getByText(/Added to portfolio!/i)).toBeInTheDocument();
+            expect(
+                screen.getByText(/Added to portfolio!/i)
+            ).toBeInTheDocument();
         });
     });
 
@@ -179,8 +196,9 @@ describe('CryptoDetail Component', () => {
         );
 
         await waitFor(() => {
-            expect(screen.getByText(/Failed to fetch cryptocurrency Details/i)).toBeInTheDocument();
+            expect(
+                screen.getByText(/Failed to fetch cryptocurrency Details/i)
+            ).toBeInTheDocument();
         });
-
     });
 });

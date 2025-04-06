@@ -1,7 +1,7 @@
-import React from "react";
-import { Box, Container } from "@mui/material";
-import MarketCoins from "@/components/Shortcuts/MarketCoins";
-import CryptoPage from "@/app/crypto/page";
+import React from 'react';
+import { Box, Container } from '@mui/material';
+import MarketCoins from '@/components/Shortcuts/MarketCoins';
+import CryptoPage from '@/app/crypto/page';
 
 export default function Home() {
     return (
@@ -14,11 +14,11 @@ export default function Home() {
             minHeight="100vh"
             bgcolor="background.default"
             px={2}
-            sx={{paddingBottom: "2rem"}}
+            sx={{ paddingBottom: '2rem' }}
         >
-            <Container maxWidth="md" >
-                <MarketCoins/>
-                <CryptoPage/>
+            <Container maxWidth="md">
+                <MarketCoins />
+                <CryptoPage />
             </Container>
         </Box>
     );

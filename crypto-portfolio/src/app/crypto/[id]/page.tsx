@@ -10,9 +10,7 @@ interface Props {
 const CryptoDetailPage = ({ params }: Props) => {
     const { id } = params;
 
-    return (
-        <CryptoDetail cryptoId={id} />
-    );
+    return <CryptoDetail cryptoId={id} />;
 };
 
 export default CryptoDetailPage;

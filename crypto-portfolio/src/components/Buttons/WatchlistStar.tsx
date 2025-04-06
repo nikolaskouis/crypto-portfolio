@@ -1,6 +1,6 @@
-"use client";
-import { useSelector } from "react-redux";
-import { selectWatchlistItems } from "@/redux/portfolioSelectors";
+'use client';
+import { useSelector } from 'react-redux';
+import { selectWatchlistItems } from '@/redux/portfolioSelectors';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 

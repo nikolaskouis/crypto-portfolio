@@ -1,15 +1,15 @@
 import React from 'react';
-import { Box } from "@mui/material";
-import {circleLineEffect} from "@/utils/animations";
+import { Box } from '@mui/material';
+import { circleLineEffect } from '@/utils/animations';
 
 const Logo = () => {
     return (
         <Box
             sx={{
-                display: "flex",
-                alignItems: "center",
+                display: 'flex',
+                alignItems: 'center',
                 mr: 2,
-                ...circleLineEffect
+                ...circleLineEffect,
             }}
         >
             <Box
