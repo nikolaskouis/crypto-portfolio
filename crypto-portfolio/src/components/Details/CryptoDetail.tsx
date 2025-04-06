@@ -68,7 +68,6 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
     );
     const [showCoinAnimation, setShowCoinAnimation] = useState(false);
     const watchListItems = useSelector(selectWatchlistItems);
-    console.log(watchListItems);
     const isWatchlisted = watchListItems.some(
         (item: WatchlistItem) => item.id.toLowerCase() === cryptoId.toLowerCase()
     );
