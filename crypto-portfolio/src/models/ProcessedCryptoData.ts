@@ -2,7 +2,7 @@ interface ProcessedCryptoData {
     name: string;
     symbol: string;
     image: string;
-    price: string;
+    price: number;
     priceFormatted: string;
     priceChangeSign: string;
     priceChange24h: string;

@@ -44,7 +44,7 @@ export default function CryptoListClient({
     const [filteredCryptos, setFilteredCrypto] = useState<Crypto[]>(
         () => initialCryptos
     );
-    const [page, setPage] = useState(2); // already fetched page 1 on SSR
+    const [page, setPage] = useState(1); // already fetched page 1 on SSR
     const [isFetching, setIsFetching] = useState(false);
     const [error, setError] = useState('');
     const [hasMore, setHasMore] = useState(true);

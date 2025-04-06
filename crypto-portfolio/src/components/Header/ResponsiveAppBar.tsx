@@ -39,7 +39,7 @@ function ResponsiveAppBar() {
     const portfolioItems = useSelector(selectPortfolioItems);
 
     const totalPortfolioValue = portfolioItems.reduce(
-        (total: number, item: PortfolioItem) => item.price,
+        (total: number, item: PortfolioItem) => total + item.price,
         0
     );
 

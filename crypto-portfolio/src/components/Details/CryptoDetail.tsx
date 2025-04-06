@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
     Alert,
     Box,
@@ -12,7 +12,7 @@ import {
     Stack,
     Typography,
 } from '@mui/material';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addToPortfolio, addToWatchlist } from '@/redux/portfolioSlice';
 import dynamic from 'next/dynamic';
 import dayjs from 'dayjs';
@@ -24,6 +24,7 @@ import { formatLargeNumber, formatNumberWithCommas } from '@/utils/formaters';
 import { motion } from 'framer-motion';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
+import { selectWatchlistItems } from '@/redux/portfolioSelectors';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -66,7 +67,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
         []
     );
     const [showCoinAnimation, setShowCoinAnimation] = useState(false);
-    const [watchList, setWatchList] = useState<boolean>(false);
+    const [watchList, setWatchList] = useState<boolean>(useSelector(selectWatchlistItems));
     const [loading, setLoading] = useState<boolean>(true);
     const [loadingChart, setLoadingChart] = useState<boolean>(true);
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
@@ -78,7 +79,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
         name: '',
         symbol: '',
         image: '/placeholder.png',
-        price: '0',
+        price: 0,
         priceFormatted: '0.00 USD',
         priceChangeSign: '+',
         priceChange24h: '0.00%',
@@ -180,7 +181,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                 name: '',
                 symbol: '',
                 image: '/placeholder.png',
-                price: '0',
+                price: 0,
                 priceFormatted: '0.00 USD',
                 priceChangeSign: '+',
                 priceChange24h: '0.00%',
@@ -231,7 +232,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
             name: cryptoData.name || '',
             symbol,
             image: cryptoData.image?.small || '/bitcoin-logo.png',
-            price: formatNumberWithCommas(price),
+            price: price,
             priceFormatted: `${price.toFixed(2)} USD`,
             priceChangeSign: priceChange24h >= 0 ? '+' : '-',
             priceChange24h: `${Math.abs(priceChange24h).toFixed(2)}%`,
@@ -401,7 +402,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                             component="p"
                             fontWeight="bold"
                         >
-                            {processedData.price} USD
+                            {formatNumberWithCommas(processedData.price)} USD
                         </Typography>
                     </Grid>
                     <Grid>
@@ -637,7 +638,7 @@ const CryptoDetail = ({ cryptoId }: CryptoDetailProps) => {
                         mb: 3,
                     }}
                 >
-                    <Box height={300}>
+                    <Box>
                         {loadingChart ? (
                             <Box
                                 display="flex"
