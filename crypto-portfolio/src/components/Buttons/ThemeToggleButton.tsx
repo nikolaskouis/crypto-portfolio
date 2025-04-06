@@ -11,7 +11,7 @@ export default function ThemeToggleButton() {
     return (
         <Box
             sx={{
-8                ...circleLineEffect,
+                ...circleLineEffect,
             }}
         >
             <IconButton onClick={toggleTheme} color="inherit">
