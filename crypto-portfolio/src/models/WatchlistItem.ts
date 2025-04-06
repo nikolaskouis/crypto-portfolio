@@ -1,5 +1,5 @@
 interface WatchlistItem {
-    id: string | number;
+    id: string;
     type: 'watchlist';
     coin: CryptoCurrency;
     selected: boolean;
