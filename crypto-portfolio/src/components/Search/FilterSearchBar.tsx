@@ -37,12 +37,11 @@ const FilterSearchBar: React.FC<IFilterSearchBarProps> = ({
     search,
     setSearch,
 }) => {
-    const theme = useTheme();
     const [showAdvanced, setShowAdvanced] = useState(false);
     const maxPrice = useMemo(() => {
         const validPrices = cryptos
             .map((c) => c.current_price)
-            .filter((p) => typeof p === 'number');
+            .filter((p) => true);
         return Math.max(0, ...validPrices);
     }, [cryptos]);
     const [priceRange, setPriceRange] = useState<[number, number]>([0, 100000]);
