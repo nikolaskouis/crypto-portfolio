@@ -1,16 +1,8 @@
 // app/crypto/[id]/page.tsx
 import CryptoDetail from '@/components/Details/CryptoDetail';
 
-interface Props {
-    params: {
-        id: string;
-    };
-}
-
-const CryptoDetailPage = async ({ params }: Props) => {
-    const { id } = params;
+export default async  function CryptoDetailPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
 
     return <CryptoDetail cryptoId={id} />;
 };
-
-export default CryptoDetailPage;

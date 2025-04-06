@@ -12,7 +12,6 @@ import {
     Select,
     Slider,
     Typography,
-    useTheme,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import TuneIcon from '@mui/icons-material/Tune';
@@ -41,7 +40,7 @@ const FilterSearchBar: React.FC<IFilterSearchBarProps> = ({
     const maxPrice = useMemo(() => {
         const validPrices = cryptos
             .map((c) => c.current_price)
-            .filter((p) => true);
+            .filter(() => true);
         return Math.max(0, ...validPrices);
     }, [cryptos]);
     const [priceRange, setPriceRange] = useState<[number, number]>([0, 100000]);
