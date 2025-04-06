@@ -14,10 +14,6 @@ export default defineConfig([
         files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
         plugins: { js },
         extends: ['js/recommended'],
-        rules: {
-            '@typescript-eslint/no-unused-vars': 'off',
-            '@typescript-eslint/no-explicit-any': 'off',
-        }
     },
     tseslint.configs.recommended,
     pluginReact.configs.flat.recommended,
