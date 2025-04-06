@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-    Box,
-    Typography,
-    Button,
-    Grid,
-    Paper,
-    Divider,
-    Stack,
-    Chip,
-} from '@mui/material';
+import { Box, Typography, Grid, Paper, Stack } from '@mui/material';
 import { Skeleton } from '@mui/material';
 
 const CryptoDetailSkeleton = () => {

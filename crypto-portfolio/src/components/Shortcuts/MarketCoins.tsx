@@ -11,6 +11,7 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import React from 'react';
 import { useTheme } from '@mui/system';
+import { hoverLineEffect } from '@/utils/animations';
 
 // Dummy data
 const coins = [
@@ -77,6 +78,7 @@ const MarketCoins = () => {
                             width: { xs: '100%', sm: 250 },
                             borderRadius: 2,
                             px: 1,
+                            ...hoverLineEffect,
                         }}
                     >
                         <SearchIcon />
@@ -101,6 +103,7 @@ const MarketCoins = () => {
                                     justifyContent: 'space-between',
                                     width: '100%',
                                     flexGrow: 1,
+                                    ...hoverLineEffect,
                                 }}
                             >
                                 <Box display="flex" alignItems="center" gap={1}>

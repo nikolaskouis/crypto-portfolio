@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useMemo } from 'react';
+'use client';
+import { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { lightTheme, darkTheme } from '@/theme';
 
@@ -13,6 +14,7 @@ export const ThemeToggleProvider = ({
     children: React.ReactNode;
 }) => {
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const [mounted, setMounted] = useState(false);
 
     const toggleTheme = () => setIsDarkMode((prev) => !prev);
 
@@ -20,6 +22,18 @@ export const ThemeToggleProvider = ({
         () => (isDarkMode ? darkTheme : lightTheme),
         [isDarkMode]
     );
+
+    useEffect(() => {
+        const storedTheme = localStorage.getItem('darkMode');
+        if (storedTheme === 'true') setIsDarkMode(true);
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem('darkMode', String(isDarkMode));
+    }, [isDarkMode]);
+
+    if (!mounted) return null; // Prevent hydration mismatch
 
     return (
         <ThemeContext.Provider value={{ toggleTheme, isDarkMode }}>

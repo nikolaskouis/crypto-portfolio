@@ -21,6 +21,7 @@ import ThemeToggleButton from '../Buttons/ThemeToggleButton';
 import { selectPortfolioItems } from '@/redux/portfolioSelectors';
 import { useRouter } from 'next/navigation';
 import { circleLineEffect, linkUnderlineEffect } from '@/utils/animations';
+import { formatNumberWithCommas } from '@/utils/formaters';
 
 const pages = ['Lists', 'Wallet'];
 const settings = ['Profile', 'Account', 'Settings', 'Logout'];
@@ -38,9 +39,7 @@ function ResponsiveAppBar() {
     const portfolioItems = useSelector(selectPortfolioItems);
 
     const totalPortfolioValue = portfolioItems.reduce(
-        (total: number, item: PortfolioItem) => {
-            return item.price;
-        },
+        (total: number, item: PortfolioItem) => item.price,
         0
     );
 
@@ -146,7 +145,9 @@ function ResponsiveAppBar() {
                             >
                                 <Typography>
                                     <AccountBalanceWalletIcon /> ${' '}
-                                    {totalPortfolioValue}
+                                    {formatNumberWithCommas(
+                                        totalPortfolioValue
+                                    )}
                                 </Typography>
                             </Box>
                         </Tooltip>

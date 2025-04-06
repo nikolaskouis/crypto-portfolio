@@ -19,7 +19,7 @@ import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { formatLargeNumber, formatPriceChangePercent } from '@/utils/formaters';
 import { useTheme } from '@mui/system';
 import FilterSearchBar from '@/components/Search/FilterSearchBar';
-import { linkUnderlineEffect } from '@/utils/animations';
+import { listUnderlineEffect } from '@/utils/animations';
 import { useSelector } from 'react-redux';
 import { selectWatchlistItems } from '@/redux/portfolioSelectors';
 import { useRouter } from 'next/navigation';
@@ -278,12 +278,9 @@ export default function CryptoListClient({
                                             '&:last-child td, &:last-child th':
                                                 { border: 0 },
                                             '&:hover': {
-                                                backgroundColor:
-                                                    theme?.palette?.background
-                                                        ?.paper ?? '#fff',
                                                 cursor: 'pointer',
                                             },
-                                            ...linkUnderlineEffect,
+                                            ...listUnderlineEffect,
                                         }}
                                         onClick={() =>
                                             navigateToDetails(crypto.id)

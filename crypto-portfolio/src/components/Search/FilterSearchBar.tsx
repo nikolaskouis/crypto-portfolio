@@ -16,7 +16,8 @@ import {
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import TuneIcon from '@mui/icons-material/Tune';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { hoverLineEffect } from '@/utils/animations';
 
 interface IFilterSearchBarProps {
     cryptos: Crypto[];
@@ -143,6 +144,7 @@ const FilterSearchBar: React.FC<IFilterSearchBarProps> = ({
                         width: { xs: '100%', sm: 250 },
                         borderRadius: 2,
                         px: 1,
+                        ...hoverLineEffect,
                     }}
                 >
                     <SearchIcon />
@@ -152,7 +154,10 @@ const FilterSearchBar: React.FC<IFilterSearchBarProps> = ({
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
-                    <IconButton onClick={() => setShowAdvanced(!showAdvanced)}>
+                    <IconButton
+                        sx={hoverLineEffect}
+                        onClick={() => setShowAdvanced(!showAdvanced)}
+                    >
                         <TuneIcon />
                     </IconButton>
                 </Paper>
@@ -241,8 +246,7 @@ const FilterSearchBar: React.FC<IFilterSearchBarProps> = ({
                                 label="Clear All Filters"
                                 onClick={clearFilters}
                                 variant="outlined"
-                                color="primary"
-                                sx={{ ml: 'auto' }}
+                                sx={{ ml: 'auto', ...hoverLineEffect }}
                             />
                         </Grid>
                     </Grid>

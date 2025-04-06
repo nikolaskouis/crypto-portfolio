@@ -135,7 +135,7 @@ describe('CryptoDetail Component', () => {
     });
 
     test('adds crypto to watchlist when watchlist button is clicked', async () => {
-        const { getByTestId } = render(
+        render(
             <Provider store={store}>
                 <CryptoDetail cryptoId="bitcoin" />
             </Provider>

@@ -1,20 +1,8 @@
 import React from 'react';
-import {
-    Card,
-    Grid,
-    Typography,
-    TextField,
-    Button,
-    Box,
-    Link,
-} from '@mui/material';
+import { Card, Grid, Typography, Box, Link } from '@mui/material';
 import { Facebook, Instagram, LinkedIn, Twitter } from '@mui/icons-material';
 import { useTheme } from '@mui/system';
-import {
-    circleLineEffect,
-    footerUnderlineEffect,
-    linkUnderlineEffect,
-} from '@/utils/animations';
+import { circleLineEffect, footerUnderlineEffect } from '@/utils/animations';
 
 const Footer = () => {
     const theme = useTheme();
