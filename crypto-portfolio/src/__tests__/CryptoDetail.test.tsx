@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import CryptoDetail from '../components/Details/CryptoDetail';
 import * as api from '@/services/api';
@@ -13,10 +13,9 @@ const mockStore = configureStore([]);
 
 // Mock the dynamic import for financial chart
 jest.mock('next/dynamic', () => () => {
-    const DynamicComponent = () => (
+    return () => (
         <div data-testid="mocked-chart">Chart Mock</div>
     );
-    return DynamicComponent;
 });
 
 // Mock the API calls
