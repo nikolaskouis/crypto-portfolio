@@ -108,7 +108,10 @@ function ResponsiveAppBar() {
                             {pages.map((page) => (
                                 <MenuItem
                                     key={page}
-                                    onClick={handleCloseNavMenu}
+                                    onClick={() => {
+                                        handleNavClick(page);
+                                        handleCloseNavMenu();
+                                    }}
                                 >
                                     <Typography sx={{ textAlign: 'center' }}>
                                         {page}
@@ -137,7 +140,7 @@ function ResponsiveAppBar() {
                         ))}
                     </Box>
                     <ThemeToggleButton />
-                    <Box sx={{ flexGrow: 0, paddingRight: '2rem' }}>
+                    <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Wallet">
                             <Box
                                 sx={linkUnderlineEffect}

@@ -91,48 +91,81 @@ const MarketCoins = () => {
                 </Box>
 
                 {/* Coins */}
-                <Grid container spacing={2}>
+                <Box
+                    display="flex"
+                    flexWrap="wrap"
+                    justifyContent="flex-start"
+                    mx={-1}
+                >
                     {coins.map((coin, index) => (
-                        <Grid key={index} sx={{ display: 'flex' }}>
+                        <Box
+                            key={index}
+                            sx={{
+                                width: {
+                                    xs: '50%',
+                                    sm: '33.33%',
+                                    md: '25%',
+                                },
+                                px: 1,
+                                mb: 2,
+                                display: 'flex',
+                            }}
+                        >
                             <Card
                                 elevation={4}
                                 sx={{
-                                    padding: '1rem',
+                                    p: 2,
                                     display: 'flex',
                                     flexDirection: 'column',
                                     justifyContent: 'space-between',
                                     width: '100%',
-                                    flexGrow: 1,
                                     ...hoverLineEffect,
                                 }}
                             >
-                                <Box display="flex" alignItems="center" gap={1}>
-                                    <Typography fontSize={24}>
-                                        {coin.icon}
-                                    </Typography>
-                                    <Typography variant="h6">
-                                        {coin.name}
-                                    </Typography>
+                                <Box display="flex" alignItems="center" gap={1} mb={1}>
+                                    <Typography fontSize={24}>{coin.icon}</Typography>
+                                    <Typography
+                                        variant="h6"
+                                        sx={{
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                            maxWidth: '100%',
+                                            flexGrow: 1,
+                                        }}
+                                    >{coin.name}</Typography>
                                 </Box>
-                                <Typography variant="h6" fontWeight={600}>
-                                    {coin.price}
-                                </Typography>
+
                                 <Typography
-                                    variant="body2"
+                                    variant="h6"
+                                    fontWeight={600}
                                     sx={{
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
+                                        maxWidth: '100%',
+                                        flexGrow: 1,
+                                    }}
+                                >
+                                    {coin.price}{' '}
+                                </Typography>
+                                <Box
+                                    component="span"
+                                    sx={{
+                                        fontSize: '0.875rem',
                                         color:
                                             coin.changeColor === 'green'
                                                 ? '#4CAF50'
                                                 : '#F44336',
+                                        ml: 1,
                                     }}
                                 >
-                                    {coin.change}{' '}
-                                    {coin.changeColor === 'green' ? '📈' : '📉'}
-                                </Typography>
+                                    {coin.change} {coin.changeColor === 'green' ? '📈' : '📉'}
+                                </Box>
                             </Card>
-                        </Grid>
+                        </Box>
                     ))}
-                </Grid>
+                </Box>
             </Paper>
         </Container>
     );
