@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Container } from '@mui/material';
 import MarketCoins from '@/components/Shortcuts/MarketCoins';
-import CryptoPage from '@/app/crypto/page';
+import CryptoListSection from '@/components/Lists/CryptoListSection';
 
 export default function Home() {
     return (
@@ -18,7 +18,7 @@ export default function Home() {
         >
             <Container maxWidth="md">
                 <MarketCoins />
-                <CryptoPage />
+                <CryptoListSection />
             </Container>
         </Box>
     );

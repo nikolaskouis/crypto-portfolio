@@ -1,16 +1,9 @@
 // app/crypto/page.tsx
 import React from 'react';
 import CryptoListClient from './components/CryptoListClient';
-import { fetchCryptos } from '@/services/api';
+import { getInitialCryptos } from '@/lib/getInitialCryptos';
 
 export default async function CryptoPage() {
-    let cryptos: Crypto[] = [];
-
-    try {
-        cryptos = await fetchCryptos(1, 20); // Server-side fetch for SSR
-    } catch (err) {
-        console.error('SSR Fetch error', err);
-    }
-
+    const cryptos = await getInitialCryptos();
     return <CryptoListClient initialCryptos={cryptos} />;
 }
